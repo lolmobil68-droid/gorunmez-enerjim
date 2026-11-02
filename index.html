@@ -1,0 +1,1401 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Görünmez Enerji: Fırat Üniversitesi öğrencileri için hayalet enerji hesaplayıcısı, kampüs israf haritası ve tasarruf rehberi. Öğrenci projesidir, resmî bir üniversite sitesi değildir.">
+<meta name="theme-color" content="#187a45">
+<meta name="referrer" content="no-referrer">
+<meta property="og:type" content="website"><meta property="og:locale" content="tr_TR">
+<meta property="og:title" content="Görünmez Enerji – Görünmez Enerjiyi Görünür Kıl!">
+<meta property="og:description" content="Bekleme modu ve açık kalan cihazların görünmez maliyetini hesapla, kampüsteki enerji israfını bildir.">
+<meta name="twitter:card" content="summary">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 34 34%27%3E%3Ccircle cx=%2717%27 cy=%2717%27 r=%2716%27 fill=%27%23187a45%27/%3E%3Cpath d=%27M19 5 10 19h6l-2 10 10-15h-6z%27 fill=%27%23fff%27/%3E%3C/svg%3E">
+<title>Görünmez Enerji – Bütçe ve Tasarruf Simülatörü</title>
+<style>
+:root{--bg:#eef7f1;--surface:#fff;--ink:#12352a;--muted:#4f6b5f;--green:#187a45;--onacc:#fff;--deep:#0f5a3c;--sun:#f5a524;--mint:#dff2e6;--line:#d4e6da;--shadow:rgba(15,90,60,.14);--foot:#0b4a30;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1f18;--surface:#143024;--ink:#e6f4ec;--muted:#9bbdab;--green:#4cc686;--onacc:#062a1b;--deep:#7fdcab;--mint:#173a2a;--line:#25473a;--shadow:rgba(0,0,0,.4);--foot:#06251a}}
+:root[data-theme="dark"]{--bg:#0d1f18;--surface:#143024;--ink:#e6f4ec;--muted:#9bbdab;--green:#4cc686;--onacc:#062a1b;--deep:#7fdcab;--mint:#173a2a;--line:#25473a;--shadow:rgba(0,0,0,.4);--foot:#06251a}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 76px);scroll-behavior:smooth}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Plus Jakarta Sans",system-ui,Segoe UI,sans-serif;line-height:1.55}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:30}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:3px solid var(--sun);outline-offset:2px;border-radius:8px}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);border-bottom:1px solid var(--line)}
+.bar{max-width:1180px;margin:auto;display:flex;align-items:center;gap:16px;padding:10px 20px}
+.logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:1.1rem;flex:none;white-space:nowrap}
+.logo small{display:block;font-weight:400;font-size:.7rem;color:var(--muted)}
+nav{display:flex;gap:2px;margin-left:auto;flex-wrap:nowrap;overflow-x:auto;min-width:0;flex:1 1 auto;scrollbar-width:thin;padding-bottom:2px}
+nav a{padding:8px 12px;border-radius:999px;font-weight:600;font-size:.86rem;color:var(--muted);white-space:nowrap;flex:none}
+nav a[aria-current]{background:var(--green);color:var(--onacc)}
+nav a:hover{color:var(--green)}
+nav a[aria-current]:hover{color:var(--onacc)}
+.theme{flex:none;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:50%;width:38px;height:38px;cursor:pointer;font-size:1rem}
+.wrap{max-width:1180px;margin:auto;padding:0 20px}
+.hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);gap:28px;padding:44px 0 28px;align-items:start}
+h1{font-size:clamp(2.2rem,5vw,3.4rem);line-height:1.08;margin:0 0 16px;font-weight:800;color:var(--deep)}
+.lead{color:var(--muted);max-width:46ch;margin:0 0 24px}
+.btns{display:flex;gap:12px;flex-wrap:wrap}
+.btn{padding:13px 24px;border-radius:12px;font-weight:700;border:2px solid var(--deep);cursor:pointer;font:inherit;font-weight:700;display:inline-block}
+.btn.p{background:var(--deep);color:var(--onacc)}
+.btn.s{background:var(--surface);color:var(--deep)}
+.scene{background:linear-gradient(#bfe3f7,#e6f5ee 70%);border-radius:24px;overflow:hidden;box-shadow:0 12px 32px var(--shadow);position:relative;min-height:300px}
+.scene svg{display:block;width:100%;height:auto}
+.badge{position:absolute;background:#fff;color:#12352a;border-radius:12px;padding:6px 12px;font-size:.78rem;font-weight:700;box-shadow:0 4px 14px rgba(0,0,0,.15)}
+.badge b{color:#187a45}
+.sim{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:20px;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:24px;box-shadow:0 8px 28px var(--shadow);margin-bottom:28px;scroll-margin-top:90px}
+.sim h2{margin:0 0 4px;font-size:1.15rem;color:var(--ink)}
+.demo{display:inline-block;font-size:.72rem;font-weight:700;background:var(--sun);color:#3d2800;border-radius:6px;padding:2px 8px;margin-left:8px;vertical-align:middle}
+label{display:block;font-size:.85rem;font-weight:600;margin:14px 0 4px}
+label span{float:right;color:var(--green)}
+input[type=range]{width:100%;accent-color:var(--green)}
+.chk{display:flex;align-items:center;gap:8px;font-weight:600;font-size:.9rem;margin-top:16px}
+.res{display:grid;grid-template-columns:130px 1fr;gap:18px;align-items:center}
+.ring{width:130px;height:130px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--green) calc(var(--p)*1%),var(--line) 0)}
+.ring div{width:96px;height:96px;border-radius:50%;background:var(--surface);display:grid;place-items:center;text-align:center;font-size:.7rem;color:var(--muted);line-height:1.2}
+.ring strong{display:block;font-size:1.7rem;color:var(--green)}
+.stats{display:grid;gap:10px}
+.stat{display:flex;justify-content:space-between;gap:10px;border-bottom:1px dashed var(--line);padding-bottom:8px;font-size:.9rem}
+.stat b{font-size:1.05rem}
+.note{font-size:.78rem;color:var(--muted);margin:14px 0 0}
+.feat{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px;padding-bottom:40px}
+.feat a{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px;display:block}
+.feat a:hover{border-color:var(--green)}
+.feat i{font-style:normal;font-size:1.6rem;display:block;margin-bottom:6px}
+.feat b{display:block}
+.feat small{color:var(--muted)}
+.soon,.tag{font-size:.68rem;font-weight:700;color:var(--muted);border:1px solid var(--line);border-radius:6px;padding:1px 6px;margin-top:6px;display:inline-block}
+.hc{--err:#b3261e}
+:root[data-theme="dark"] .hc{--err:#ff9a8d}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .hc{--err:#ff9a8d}}
+.hcg{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:22px;align-items:start}
+.grp{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px 20px;margin:0 0 14px;min-width:0}
+.grp legend{font-weight:800;color:var(--deep);padding:0 6px;font-size:.98rem}
+.fld{margin:10px 0 4px}
+.fld>label{margin:0 0 4px;font-size:.85rem}
+.frow{display:flex;gap:12px;align-items:center}
+.frow input[type=range]{flex:1;min-width:0}
+.frow input[type=number]{width:92px;flex:none;padding:8px 10px;border:1.5px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit}
+.frow input[aria-invalid=true]{border-color:var(--err)}
+.unit{font-size:.8rem;color:var(--muted);width:56px;flex:none}
+.err{color:var(--err);font-size:.78rem;font-weight:600;min-height:1em;margin-top:2px}
+.rcol{position:sticky;top:calc(env(safe-area-inset-top,0px) + 80px)}
+.rbox{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:20px;margin-bottom:14px;box-shadow:0 8px 28px var(--shadow)}
+.rbox h3{margin:0 0 10px;font-size:1.02rem;color:var(--deep)}
+.tw{overflow-x:auto}
+table.rt{width:100%;border-collapse:collapse;font-size:.9rem}
+.rt th,.rt td{padding:8px 6px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+.rt th:first-child,.rt td:first-child{text-align:left}
+.rt th{color:var(--muted);font-weight:600;font-size:.8rem}
+.rt td b{color:var(--ink)}
+.save{background:var(--mint);border-radius:14px;padding:14px 16px;margin-top:14px;font-size:.92rem}
+.save b{color:var(--deep)}
+.bar2{display:grid;grid-template-columns:110px 1fr 70px;gap:8px;align-items:center;font-size:.8rem;margin:6px 0}
+.bar2 i{display:block;height:10px;border-radius:6px;background:var(--green);min-width:2px}
+.bar2 span:last-child{text-align:right;color:var(--muted)}
+.alertbox{border:1.5px solid var(--err);color:var(--err);border-radius:12px;padding:10px 14px;font-weight:600;font-size:.88rem;margin-bottom:12px}
+.est{border:1.5px dashed var(--line);border-radius:18px;padding:16px 18px;margin-bottom:14px}
+.est h3{margin:0 0 6px;font-size:.98rem;color:var(--deep)}
+.est p{margin:6px 0;font-size:.85rem;color:var(--muted)}
+.est label{font-size:.8rem;margin:10px 0 4px}
+.est input[type=number]{width:130px;padding:7px 10px;border:1.5px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit}
+.est input[aria-invalid=true]{border-color:var(--err)}
+.est output{display:block;font-weight:700;color:var(--ink);font-size:.9rem}
+@media (max-width:900px){.hcg{grid-template-columns:minmax(0,1fr)}.rcol{position:static}}
+@media (max-width:480px){.frow{flex-wrap:wrap}.frow input[type=range]{flex:1 1 100%}.bar2{grid-template-columns:90px 1fr 60px}}
+.gsec{border-top:1px solid var(--line)}
+.dbadge{display:inline-block;background:var(--mint);color:var(--deep);border-radius:10px;padding:8px 14px;font-size:.85rem;font-weight:600;margin:0 0 18px}
+.cgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.cbox{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px 18px 14px;min-width:0}
+.cbox h3{margin:0 0 10px;font-size:1rem;color:var(--deep)}
+.cw{position:relative;height:300px}
+.cw canvas{width:100%!important}
+.nodata{position:absolute;inset:0;display:grid;place-items:center;text-align:center;color:var(--muted);font-size:.9rem;padding:20px}
+.nodata[hidden]{display:none}
+.cbox p{font-size:.85rem;color:var(--muted);margin:10px 0 0}
+.cbox p.live{color:var(--ink);font-weight:600}
+@media (max-width:900px){.cgrid{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:480px){.cw{height:260px}.cbox{padding:14px}}
+.kdemo{background:var(--mint);border-radius:12px;padding:10px 14px;font-size:.82rem;color:var(--muted);margin:0 0 18px}
+.kgrid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:20px;align-items:start}
+.kmap{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:12px;min-width:0}
+.kmap svg{width:100%;height:auto;display:block}
+.bl{fill:var(--mint);stroke:var(--green);stroke-width:1.5;cursor:pointer}
+.bg:hover .bl,.bg:focus-visible .bl{fill:var(--line)}
+.bg.sel .bl{stroke:var(--sun);stroke-width:4}
+.bt{font-size:12px;fill:var(--ink);pointer-events:none;text-anchor:middle}
+.bc{fill:var(--sun);pointer-events:none}.bn{font-size:11px;font-weight:800;fill:#3d2800;text-anchor:middle;pointer-events:none}
+.kform{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px 20px;min-width:0}
+.kform h3{margin:0 0 6px;font-size:1.02rem;color:var(--deep)}
+.kform select,.kform input[type=text],.kform textarea,.kfil select{width:100%;padding:9px 10px;border:1.5px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit}
+.kform textarea{min-height:84px;resize:vertical}
+.kform [aria-invalid=true]{border-color:var(--err,#b3261e)}
+.kerr{color:var(--err,#b3261e);font-size:.8rem;font-weight:600;min-height:1.1em;margin:6px 0}
+.kok{color:var(--green);font-size:.82rem;font-weight:600;margin:6px 0}
+.kfil{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:20px 0 12px;font-size:.88rem;color:var(--muted)}
+.kfil select{width:auto;min-width:150px}
+.kc{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 18px;margin-bottom:12px}
+.kc h4{margin:0 0 4px;font-size:.98rem;color:var(--deep)}
+.kc p{margin:6px 0;font-size:.9rem;overflow-wrap:anywhere}
+.kt{display:inline-block;font-size:.7rem;font-weight:700;border-radius:6px;padding:1px 8px;margin:0 6px 4px 0;background:var(--mint);color:var(--deep)}
+.kt.dm{background:var(--sun);color:#3d2800}.kt.ok{background:var(--green);color:var(--onacc)}
+.ks{border-left:3px solid var(--green);padding:2px 0 2px 10px;margin:8px 0;font-size:.86rem}
+.ks small,.kc small{color:var(--muted)}
+.kact{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.kact input{flex:1;min-width:150px;padding:7px 10px;border:1.5px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit}
+.kb{padding:7px 14px;border-radius:10px;border:1.5px solid var(--deep);background:var(--surface);color:var(--deep);font:inherit;font-weight:700;font-size:.82rem;cursor:pointer}
+.kb.p{background:var(--deep);color:var(--surface)}
+@media (max-width:900px){.kgrid{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:640px){.kmap{overflow-x:auto}.kmap svg{min-width:560px}}
+.bchips{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 20px}
+.bchip{padding:8px 16px;border-radius:999px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-weight:600;font-size:.85rem;cursor:pointer}
+.bchip[aria-pressed=true]{background:var(--deep);border-color:var(--deep);color:var(--surface)}
+.bgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;align-items:start}
+.bcard{background:var(--surface);border:1px solid var(--line);border-radius:18px;overflow:hidden;min-width:0;box-shadow:0 6px 20px var(--shadow)}
+.bcard.open{grid-column:1/-1}
+.bimg svg{display:block;width:100%;height:auto}
+.bbody{padding:16px 18px 18px}
+.bbody h3{margin:6px 0 6px;font-size:1.08rem;line-height:1.3;color:var(--deep)}
+.bbody .bd{margin:0 0 10px;color:var(--muted);font-size:.9rem}
+.bmeta{display:block;font-size:.78rem;color:var(--muted);margin-bottom:10px}
+.bcont{margin-top:14px;padding-top:14px;border-top:1px solid var(--line);max-width:68ch;font-size:1rem;line-height:1.75}
+.bcont[hidden]{display:none}
+.bcont p{margin:0 0 14px}
+.bcont h4{margin:18px 0 6px;font-size:1.02rem;color:var(--deep)}
+.bcont ul{margin:0 0 14px;padding-left:20px}
+.bcont .bsrc{font-size:.8rem;color:var(--muted)}
+.bcont .bnote{background:var(--mint);border-radius:10px;padding:10px 14px;font-size:.88rem}
+@media (max-width:900px){.bgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:560px){.bgrid{grid-template-columns:minmax(0,1fr)}}
+.pl{display:grid;grid-template-columns:200px minmax(0,1fr);gap:24px;background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:24px;box-shadow:0 10px 30px var(--shadow)}
+.pl svg{display:block;width:100%;height:auto;border-radius:16px}
+.pl h3{margin:0 0 4px;font-size:1.2rem;color:var(--deep)}
+.pcap{background:var(--mint);border-radius:12px;padding:12px 14px;min-height:5.2em;font-size:.95rem;line-height:1.6;margin:12px 0}
+.pctl{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.pctl .kb{padding:10px 20px;font-size:.92rem}
+.pctl .kb:disabled{opacity:.45;cursor:not-allowed}
+.pt{display:flex;align-items:center;gap:12px;margin:12px 0 4px}
+.pt input[type=range]{flex:1;min-width:0;accent-color:var(--green);height:8px}
+.ptime{font-variant-numeric:tabular-nums;font-size:.85rem;color:var(--muted);white-space:nowrap}
+.pcta{background:var(--deep);color:var(--surface);border-radius:14px;padding:14px 18px;margin-top:14px;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.pcta[hidden]{display:none}
+.pcta p{margin:0;flex:1;min-width:200px;font-weight:600}
+.pcta .btn{border-color:var(--surface);background:var(--surface);color:var(--deep)}
+dialog.pdlg{border:1px solid var(--line);border-radius:20px;background:var(--surface);color:var(--ink);max-width:640px;width:calc(100% - 32px);max-height:85vh;padding:0;overflow:hidden}
+dialog.pdlg::backdrop{background:rgba(5,25,15,.6)}
+.pdh{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid var(--line)}
+.pdh h3{margin:0;font-size:1.05rem;color:var(--deep)}
+.pdb{padding:8px 20px 16px;overflow-y:auto;max-height:calc(85vh - 130px)}
+.pdb p.sg{margin:12px 0;font-size:.98rem;line-height:1.7}
+.pdb p.sg b{display:inline-block;min-width:3.2em;color:var(--green);font-variant-numeric:tabular-nums}
+.pdf{padding:12px 20px;border-top:1px solid var(--line);display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
+@media (max-width:700px){.pl{grid-template-columns:minmax(0,1fr)}.pl svg{max-width:180px}}
+.gfacts{display:grid;gap:8px;margin:10px 0 12px}
+.gf{background:var(--mint);border-radius:10px;padding:8px 12px;font-size:.86rem;line-height:1.5}
+.gf b{display:block;font-size:.72rem;color:var(--muted);letter-spacing:.02em}
+details.gd{margin-top:6px}
+details.gd>summary{cursor:pointer;font-weight:700;font-size:.88rem;color:var(--deep);padding:8px 0;list-style:none}
+details.gd>summary::-webkit-details-marker{display:none}
+details.gd>summary::before{content:"+ "}
+details.gd[open]>summary::before{content:"− "}
+.gd h5{margin:12px 0 4px;font-size:.84rem;color:var(--deep)}
+.gd ol,.gd ul{margin:0 0 8px;padding-left:20px;font-size:.9rem;line-height:1.6}
+.gd .gn{font-size:.8rem;color:var(--muted);margin:8px 0 0}
+.og{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin-bottom:18px}
+.og .card h3{margin:0 0 8px}
+.pgb{height:12px;border-radius:8px;background:var(--line);overflow:hidden;margin:8px 0 4px}
+.pgb i{display:block;height:100%;background:var(--green);width:0;transition:width .25s}
+.pf{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:10px}
+.pf div{border:1.5px solid var(--line);border-radius:12px;padding:8px;font-size:.78rem;text-align:center;color:var(--muted)}
+.pf div.on{border-color:var(--green);background:var(--mint);color:var(--ink);font-weight:700}
+.pf span{display:block;font-size:1.4rem}
+.tk{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.tk label{display:flex;gap:10px;align-items:flex-start;margin:0;padding:10px 12px;border:1.5px solid var(--line);border-radius:12px;font-size:.9rem;font-weight:500;cursor:pointer}
+.tk label.done{background:var(--mint);border-color:var(--green)}
+.tk input{margin-top:3px;accent-color:var(--green)}
+.tk em{margin-left:auto;font-style:normal;font-weight:800;color:var(--green);white-space:nowrap}
+.wk{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;margin-top:10px;text-align:center;font-size:.74rem;color:var(--muted)}
+.wk div{border-radius:10px;border:1.5px solid var(--line);padding:6px 2px}
+.wk div.today{border-color:var(--sun)}.wk b{display:block;font-size:1rem;color:var(--ink)}
+.ch{border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:8px;font-size:.88rem}
+.ch.done{background:var(--mint);border-color:var(--green)}
+.ch small{color:var(--muted)}
+.bd2{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.bd2 div{border:1.5px dashed var(--line);border-radius:12px;padding:10px 6px;text-align:center;font-size:.76rem;color:var(--muted);opacity:.7}
+.bd2 div.on{border:1.5px solid var(--green);opacity:1;background:var(--mint);color:var(--ink)}
+.bd2 span{display:block;font-size:1.6rem;filter:grayscale(1)}.bd2 div.on span{filter:none}
+table.lb{width:100%;border-collapse:collapse;font-size:.88rem}
+.lb th,.lb td{padding:7px 6px;text-align:right;border-bottom:1px solid var(--line)}.lb th:first-child,.lb td:first-child,.lb th:nth-child(2),.lb td:nth-child(2){text-align:left}
+.lb tr.top td{font-weight:800;color:var(--deep)}.lb tr.out td{color:var(--muted);font-style:italic}
+.og .full{grid-column:1/-1}
+.cr table{width:100%;border-collapse:collapse;font-size:.84rem;margin:6px 0 12px}.cr td,.cr th{padding:5px 6px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+@media (max-width:900px){.og{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:480px){.bd2{grid-template-columns:repeat(2,minmax(0,1fr))}.pf{grid-template-columns:minmax(0,1fr)}}
+.evg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin-bottom:26px;align-items:start}
+.evg h3{margin:0 0 4px;font-size:1.08rem;color:var(--deep)}
+.evp{font-size:.9rem;font-weight:700;margin:6px 0 0}
+.stc{display:inline-block;font-size:.7rem;font-weight:700;border-radius:6px;padding:1px 8px;white-space:nowrap;margin-right:6px}
+.stc.ok{background:var(--green);color:var(--onacc)}.stc.mid{background:var(--sun);color:#3d2800}.stc.no{background:var(--line);color:var(--ink)}.stc.unk{border:1px dashed var(--muted);color:var(--muted)}
+.evl{list-style:none;padding:0;margin:10px 0 0;display:grid;gap:10px}
+.evl li{border-top:1px solid var(--line);padding-top:10px;font-size:.88rem}
+.evl small{display:block;color:var(--muted);margin-top:2px;line-height:1.45}
+.sq{border:1.5px solid var(--line);border-radius:14px;padding:12px 16px;margin:0 0 12px;background:var(--surface);min-width:0}
+.sq.bad{border-color:var(--err,#b3261e)}
+.sq legend{font-weight:700;font-size:.92rem;padding:0 6px;line-height:1.4}
+.sq label{display:inline-flex;align-items:center;gap:6px;margin:4px 14px 4px 0;font-weight:500;font-size:.88rem}
+.sq select,.sq textarea{width:100%;padding:9px 10px;border:1.5px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit;margin-top:4px}
+.sq textarea{min-height:76px;resize:vertical}
+.sq input[type=radio],.sq input[type=checkbox]{accent-color:var(--green)}
+.sq [aria-invalid=true]{border-color:var(--err,#b3261e)}
+.sres{background:var(--mint);border-radius:14px;padding:14px 16px;margin-top:14px}
+.sres[hidden]{display:none}
+.sres textarea{width:100%;min-height:150px;padding:10px;border:1.5px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);font:inherit;font-size:.85rem}
+@media (max-width:900px){.evg{grid-template-columns:minmax(0,1fr)}}
+.pst{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin-bottom:18px}
+.pstat{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:22px 18px;text-align:center;box-shadow:0 8px 24px var(--shadow)}
+.pstat .pn{display:block;font-size:clamp(2rem,5vw,2.9rem);font-weight:800;color:var(--green);line-height:1.1;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.pstat .pu{display:block;font-weight:700;color:var(--deep);margin-top:2px}
+.pstat small{display:block;color:var(--muted);margin-top:8px;font-size:.8rem;line-height:1.4}
+.pfac{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:20px;margin-bottom:18px}
+.pfac h3{margin:0 0 10px;font-size:1.05rem;color:var(--deep)}
+.pfr{display:grid;grid-template-columns:150px minmax(0,1fr) 110px;gap:10px;align-items:center;font-size:.86rem;margin:8px 0}
+.pfr i{display:block;height:12px;border-radius:7px;background:var(--green);min-width:3px}
+.pfr span:last-child{text-align:right;color:var(--muted)}
+.psrc{border-radius:12px;padding:10px 14px;font-size:.86rem;margin:0 0 16px;border:1.5px solid var(--sun);background:var(--mint)}
+.psrc.real{border-color:var(--green)}
+.pcn{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;align-items:start}
+.pcn .card h3{margin:0 0 8px}
+.pcn ul{margin:6px 0 0;padding-left:20px;font-size:.86rem;line-height:1.6}
+.pcn select{width:100%;padding:9px 10px;border:1.5px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit}
+.pcn select[aria-invalid=true]{border-color:var(--err,#b3261e)}
+@media (max-width:900px){.pst{grid-template-columns:minmax(0,1fr)}.pcn{grid-template-columns:minmax(0,1fr)}.pfr{grid-template-columns:110px minmax(0,1fr) 80px}}
+html.embed header,html.embed footer{display:none}
+html.embed main>*:not(#hayalet):not(#kartim){display:none}
+html.embed body::before{display:none}
+.kgr{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:22px;align-items:start}
+.kcard{background:linear-gradient(135deg,#0b4a30,#157042);color:#fff;border-radius:22px;padding:22px;box-shadow:0 14px 36px var(--shadow);min-width:0}
+.kcard .kch{display:flex;justify-content:space-between;gap:10px;align-items:center;font-weight:800;font-size:1.02rem;margin-bottom:14px;flex-wrap:wrap}
+.kcard .kch small{font-weight:600;opacity:.85;font-size:.78rem}
+.kcs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.kcs div{background:rgba(255,255,255,.14);border-radius:14px;padding:12px 14px;min-width:0}
+.kcs small{display:block;font-size:.72rem;opacity:.85;letter-spacing:.02em}
+.kcs b{display:block;font-size:1.35rem;line-height:1.25;overflow-wrap:anywhere}
+.kcs b span{font-size:.8rem;font-weight:600;opacity:.9}
+.kcard .kcf{font-size:.74rem;opacity:.85;margin:12px 0 0;line-height:1.45}
+.kcard.empty .kcs{opacity:.55}
+.kgr textarea{width:100%;min-height:150px;padding:10px 12px;border:1.5px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink);font:inherit;font-size:.9rem;line-height:1.55}
+.kgr .kact{margin-top:10px}
+.kgr .kb:disabled,.kgr a.kb[aria-disabled=true]{opacity:.45;pointer-events:none}
+a.kb{display:inline-block;text-decoration:none}
+.emc textarea{width:100%;min-height:150px;padding:10px 12px;border:1.5px solid var(--line);border-radius:12px;background:var(--bg);color:var(--ink);font:.82rem/1.5 ui-monospace,Menlo,Consolas,monospace}
+@media (max-width:900px){.kgr{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:480px){.kcs{grid-template-columns:minmax(0,1fr)}.kcs b{font-size:1.2rem}}
+input[type=checkbox],input[type=radio]{width:20px;height:20px;flex:none}
+.skip{position:absolute;left:-9999px;top:8px;background:var(--deep);color:var(--surface);padding:10px 16px;border-radius:10px;z-index:100;font-weight:700}
+.skip:focus{left:12px}
+/* Aşama 2 bölümleri */
+section.blk{padding:56px 0}
+section.alt{background:var(--mint)}
+h2.t{font-size:clamp(1.5rem,3.2vw,2.1rem);margin:0 0 12px;color:var(--deep);line-height:1.2}
+.sub{color:var(--muted);max-width:62ch;margin:0 0 26px}
+.grid{display:grid;gap:18px}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:22px}
+.card h3{margin:10px 0 6px;font-size:1.05rem;color:var(--deep)}
+.card p{margin:0;color:var(--muted);font-size:.92rem}
+.ico{width:46px;height:46px;border-radius:12px;background:var(--mint);display:grid;place-items:center;font-size:1.4rem}
+.skh{display:flex;gap:14px;align-items:flex-start}
+.skh b{flex:none;min-width:54px;text-align:center;background:var(--deep);color:var(--surface);border-radius:10px;padding:6px 4px;font-size:.8rem;line-height:1.2}
+.skh b em{display:block;font-style:normal;font-size:1.3rem}
+.slot{border:2px dashed var(--line);border-radius:18px;padding:22px;min-height:140px}
+.slot h3{margin:8px 0 4px;font-size:1rem;color:var(--deep)}
+.slot p{margin:0 0 10px;font-size:.88rem;color:var(--muted)}
+.tips{counter-reset:t;list-style:none;padding:0;margin:0;display:grid;gap:12px}
+.tips li{counter-increment:t;display:flex;gap:14px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 18px}
+.tips li::before{content:counter(t);flex:none;width:30px;height:30px;border-radius:50%;background:var(--green);color:var(--onacc);display:grid;place-items:center;font-weight:800;font-size:.9rem}
+.slogan{font-size:clamp(1.8rem,4.4vw,2.8rem);line-height:1.1;margin:0 0 14px;color:var(--deep);font-weight:800}
+footer{background:var(--foot);color:#d6efe0;padding:40px 0 24px}
+.fg{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:28px}
+footer h4{margin:0 0 10px;color:#fff}
+footer a{display:block;padding:3px 0;color:#bfe3cd}
+footer a:hover{color:#fff}
+footer p{margin:0;font-size:.9rem}
+.copy{border-top:1px solid rgba(255,255,255,.18);margin-top:26px;padding-top:16px;font-size:.8rem;color:#9fcdb2}
+@media (max-width:900px){.hero,.sim,.fg{grid-template-columns:minmax(0,1fr)}.feat{grid-template-columns:repeat(2,minmax(0,1fr))}.g3,.g4{grid-template-columns:repeat(2,minmax(0,1fr))}.bar{flex-wrap:wrap}nav{margin-left:0;order:3;width:100%;flex:1 1 100%}section.blk{padding:42px 0}}
+@media (max-width:560px){.g3,.g4{grid-template-columns:minmax(0,1fr)}.res{grid-template-columns:minmax(0,1fr);justify-items:center}.stats{width:100%}.badge{font-size:.65rem;padding:4px 8px}}
+@media (max-width:900px){html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 116px)}}
+@media (max-width:480px){.logo small{display:none}}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<a class="skip" href="#ana-sayfa">Ana içeriğe geç</a>
+<header><div class="bar">
+<a class="logo" href="#ana-sayfa" aria-label="Görünmez Enerji ana sayfa">
+<svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><circle cx="17" cy="17" r="16" fill="#1e8a50"/><path d="M19 5 10 19h6l-2 10 10-15h-6z" fill="#f5a524"/></svg>
+<span>Görünmez Enerji<small>Enerjiyi görünür kıl, tasarrufu alışkanlık yap</small></span></a>
+<nav aria-label="Ana menü">
+<a href="#ana-sayfa" aria-current="page">Ana Sayfa</a><a href="#simulator">Simülatör</a><a href="#hayalet">Hayalet Enerji</a><a href="#kartim">Tasarruf Kartı</a><a href="#grafikler">Grafikler</a><a href="#kampus">Kampüs Haritası</a><a href="#blog">Blog</a><a href="#podcast">Podcast</a><a href="#rehber">Tasarruf Rehberi</a><a href="#oyun">Görevler</a><a href="#degerlendirme">Değerlendirme</a><a href="#pano">Toplam Tasarruf</a><a href="#moduller">Yenilenebilir Çözümler</a><a href="#moduller">Haberler</a><a href="#hakkinda">Hakkında</a></nav>
+<button class="theme" id="theme" aria-label="Tema değiştir">◐</button>
+</div></header>
+
+<main id="ana-sayfa" tabindex="-1">
+<div class="wrap">
+<section class="hero">
+<div>
+<h1>Bütçe ve Tasarruf Simülatörü</h1>
+<p class="lead">Fırat Üniversitesi öğrencileri için: Evinizin ya da yurt odanızın enerji tüketimini görün, yenilenebilir enerjiyle ne kadar tasarruf edebileceğinizi birkaç adımda hesaplayın.</p>
+<div class="btns"><a class="btn p" href="#simulator">Simülasyona başla</a><a class="btn s" href="#baslangic">Nasıl çalışır?</a></div>
+</div>
+<div class="scene" role="img" aria-label="Güneş panelleri, rüzgar türbini ve elektrikli araçla donatılmış yeşil bir ev illüstrasyonu">
+<svg viewBox="0 0 600 340" aria-hidden="true">
+<circle cx="70" cy="60" r="28" fill="#f5a524"/>
+<path d="M0 250 Q120 190 240 235 T480 220 T600 240 V340 H0z" fill="#8fcf9f"/>
+<rect x="0" y="270" width="600" height="70" fill="#5fb67a"/>
+<g transform="translate(500 110)"><rect x="-3" y="0" width="6" height="140" fill="#e8eef0"/><g stroke="#e8eef0" stroke-width="5" stroke-linecap="round"><line x1="0" y1="0" x2="0" y2="-55"/><line x1="0" y1="0" x2="48" y2="28"/><line x1="0" y1="0" x2="-48" y2="28"/></g><circle r="7" fill="#fff"/></g>
+<rect x="150" y="170" width="230" height="110" fill="#f4ede0"/>
+<polygon points="130,175 265,95 400,175" fill="#2b4a5e"/>
+<g fill="#1f4f8f" stroke="#9fc5ee" stroke-width="1.5"><polygon points="190,150 250,108 262,118 205,160"/><polygon points="270,112 330,150 318,160 262,118"/></g>
+<rect x="175" y="205" width="45" height="75" fill="#8a5a3c"/>
+<rect x="250" y="200" width="100" height="45" fill="#bfe3f7" stroke="#2b4a5e" stroke-width="3"/>
+<rect x="400" y="230" width="22" height="50" rx="4" fill="#1e8a50"/>
+<rect x="430" y="255" width="85" height="26" rx="12" fill="#fff"/><circle cx="450" cy="283" r="9" fill="#33414a"/><circle cx="497" cy="283" r="9" fill="#33414a"/>
+</svg>
+<span class="badge" style="left:3%;bottom:6%">Güneş Paneli <b>6 kW</b></span>
+<span class="badge" style="right:3%;top:6%">Rüzgar Türbini <b>3 kW</b></span>
+<span class="badge" style="right:3%;bottom:6%">Batarya Depolama <b>10 kWh</b></span>
+</div>
+</section>
+
+<section class="sim" id="simulator" aria-labelledby="st">
+<div>
+<h2 id="st">Simülasyon girdileri<span class="demo">DEMO</span></h2>
+<label for="kwh">Aylık elektrik tüketimi <span id="kwhv"></span></label>
+<input type="range" id="kwh" min="50" max="600" step="10" value="250">
+<label for="pnl">Güneş paneli sayısı <span id="pnlv"></span></label>
+<input type="range" id="pnl" min="0" max="20" step="1" value="8">
+<label for="tarife">Birim fiyat (TL/kWh) <span id="tarv"></span></label>
+<input type="range" id="tarife" min="2" max="8" step="0.1" value="4.5">
+<label class="chk"><input type="checkbox" id="bat" checked> Batarya depolama ekle</label>
+</div>
+<div>
+<h2>Simülasyon sonuçları</h2>
+<div class="res" style="margin-top:14px">
+<div class="ring" id="ring"><div><span><strong id="pct">0</strong>Tasarruf oranı</span></div></div>
+<div class="stats">
+<div class="stat"><span>Yıllık üretim</span><b id="uret">–</b></div>
+<div class="stat"><span>Yıllık tasarruf</span><b id="tas">–</b></div>
+<div class="stat"><span>Önlenen CO₂</span><b id="co2">–</b></div>
+</div></div>
+<p class="note">Bu sonuçlar basit bir demo hesaplamasıdır; gerçek ölçüm verisi içermez. Varsayımlar: panel başına 0,4 kW, yıllık ~1.500 saat güneşlenme, 0,45 kg CO₂/kWh. Batarya öz tüketim oranını artırır.</p>
+</div>
+</section>
+
+<section class="feat" aria-label="Sonraki modüller">
+<a href="#hayalet"><i>🧮</i><b>Hayalet Enerji Hesaplayıcısı</b><small>Bekleme kayıplarını hesapla</small><span class="soon">Aktif</span></a>
+<a href="#grafikler"><i>📊</i><b>Veri ve Grafikler</b><small>Tüketimi görünür kıl</small><span class="soon">Aktif</span></a>
+<a href="#moduller"><i>🗺️</i><b>Temiz Enerji Haritası</b><small>Bölgesel kaynaklar</small><span class="soon">Yakında</span></a>
+<a href="#moduller"><i>🌱</i><b>Temiz Enerji Çözümleri</b><small>Güneş, rüzgar, depolama</small><span class="soon">Yakında</span></a>
+<a href="#hakkinda"><i>📚</i><b>Kaynakça ve Proje</b><small>Kaynaklar ve hakkında</small><span class="soon">Yakında</span></a>
+</section>
+</div>
+
+<section class="blk hc" id="hayalet" aria-labelledby="hct"><div class="wrap">
+<h2 class="t" id="hct">Hayalet Enerji Hesaplayıcısı</h2>
+<p class="sub">Prizde unutulan adaptörlerin, bekleme modundaki cihazların ve açık bırakılan sınıf ekipmanlarının görünmeyen enerji kaybını hesapla. Değerler yazdıkça anında güncellenir.</p>
+<div class="hcg">
+<form id="hcform" novalidate onsubmit="return false">
+<fieldset class="grp"><legend>Prizde boş duran adaptörler</legend><div id="g1"></div></fieldset>
+<fieldset class="grp"><legend>Bekleme modundaki laptop ve monitörler</legend><div id="g2"></div></fieldset>
+<fieldset class="grp"><legend>Açık bırakılan akıllı tahta ve projektörler</legend><div id="g3"></div></fieldset>
+<fieldset class="grp"><legend>Günlük video izleme</legend><div id="g4"></div></fieldset>
+<fieldset class="grp"><legend>Elektrik birim fiyatı</legend><div id="g5"></div></fieldset>
+</form>
+<div class="rcol" aria-live="polite">
+<div class="rbox"><h3>Hayalet enerji sonuçları</h3><div id="hcalert"></div>
+<div class="tw"><table class="rt"><thead><tr><th></th><th>Günlük</th><th>Aylık</th><th>Yıllık</th></tr></thead><tbody>
+<tr><td>Enerji kaybı (kWh)</td><td><b id="e1">–</b></td><td><b id="e2">–</b></td><td><b id="e3">–</b></td></tr>
+<tr><td>Maliyet (TL)</td><td><b id="c1">–</b></td><td><b id="c2">–</b></td><td><b id="c3">–</b></td></tr>
+<tr><td>Emisyon (kg CO₂)</td><td><b id="k1">–</b></td><td><b id="k2">–</b></td><td><b id="k3">–</b></td></tr></tbody></table></div>
+<div class="save"><b>Potansiyel tasarruf:</b> <span id="sv">–</span></div>
+<div id="brk" style="margin-top:14px"></div>
+<p class="note">Hesap: Enerji (kWh) = Güç (W) × Süre (saat) / 1000. Referans güçler: adaptör 0,25 W, laptop/monitör bekleme 5 W, akıllı tahta/projektör 150 W. Karbon katsayısı 0,48 kg CO₂/kWh. Aylık = 30 gün, yıllık = 365 gün varsayılmıştır. Potansiyel tasarruf, bu cihazların tamamen kapatılması veya fişten çekilmesi halinde önlenen kayıptır.</p></div>
+<div class="est"><h3>Video izleme (tahmini gösterge)</h3><p id="vtxt">–</p>
+<p>Doğrulanmış bir dönüşüm katsayısı bulunmadığı için bu bölüm toplam sonuca dahil edilmez ve varsayılan değer verilmez. Kendi kaynağından bir değer girersen tahmin gösterilir.</p>
+<label for="w1080">1080p için enerji yoğunluğu (Wh/saat, isteğe bağlı)</label><input type="number" id="w1080" min="0" step="any" inputmode="decimal"><div class="err" id="w1080e"></div>
+<label for="w4k">4K için enerji yoğunluğu (Wh/saat, isteğe bağlı)</label><input type="number" id="w4k" min="0" step="any" inputmode="decimal"><div class="err" id="w4ke"></div>
+<output id="vout"></output></div>
+<div class="est"><h3>Ağaç eşdeğerliği (tahmini gösterge)</h3><p>Doğrulanmış bir ağaç katsayısı olmadığı için varsayılan değer verilmedi ve toplam sonuca dahil edilmedi. Kaynağını bildiğin bir değeri girersen yıllık emisyonun kaç ağaç eşdeğeri olduğu tahmin edilir.</p>
+<label for="tree">Bir ağacın yıllık CO₂ tutumu (kg, isteğe bağlı)</label><input type="number" id="tree" min="0" step="any" inputmode="decimal"><div class="err" id="treee"></div>
+<output id="tout"></output></div>
+</div></div></div></section>
+
+<section class="blk hc alt" id="kartim" aria-labelledby="kt3"><div class="wrap">
+<h2 class="t" id="kt3">Kişisel Tasarruf Kartın ve Paylaşım</h2>
+<p class="sub">Hayalet Enerji Hesaplayıcısı’ndaki sonucundan bir tasarruf kartı oluşur. Kartın metnini paylaşabilir ya da hesaplayıcıyı kendi web sitene gömebilirsin.</p>
+<div class="kgr">
+<div><div class="kcard" id="kcard" role="group" aria-label="Kişisel tasarruf kartı"><div class="kch"><span>⚡ Görünmez Enerji</span><small>Kişisel Tasarruf Kartı</small></div>
+<div class="kcs"><div><small>YILLIK ENERJİ TASARRUFU</small><b id="kc1">–</b></div><div><small>ÖNLENEBİLECEK KARBON</small><b id="kc2">–</b></div><div><small>EKOLOJİK PROFİL</small><b id="kc3">–</b></div><div><small>TASARRUF ROZETİ</small><b id="kc4">–</b></div></div>
+<p class="kcf" id="kcf">Değerler hesaplayıcıya girdiğin bilgilere dayanan potansiyel tasarruftır; ölçülmüş gerçek tasarruf değildir.</p></div>
+<p class="note" id="kcn" role="status"></p></div>
+<div><label for="ksh" style="margin-top:0">Paylaşılabilir metin</label><textarea id="ksh" readonly aria-label="Paylaşılabilir metin"></textarea>
+<div class="kerr" id="kshm" style="color:var(--green)" role="status"></div>
+<div class="kact"><button type="button" class="kb p" id="kcopy">Metni kopyala</button><button type="button" class="kb" id="kshare" hidden>Paylaş…</button><a class="kb" id="kwa" href="#kartim" target="_blank" rel="noopener noreferrer">WhatsApp</a><a class="kb" id="kx" href="#kartim" target="_blank" rel="noopener noreferrer">X</a><button type="button" class="kb" id="kemb">Gömme kodu (iframe)</button></div>
+<p class="note">Rozet eşikleri yıllık potansiyel tasarrufa göre bu sitenin kendi demo eşikleridir: Bronz 0–49 kWh, Gümüş 50–199, Altın 200–499, Platin 500 ve üzeri. Ekolojik profil Tasarruf Oyunu’ndaki haftalık görevlerden gelir.</p></div>
+</div>
+<dialog class="pdlg" id="kdlg" aria-labelledby="kdt"><div class="pdh"><h3 id="kdt">Sitene gömme kodu</h3><button type="button" class="kb" id="kdx" aria-label="Pencereyi kapat">Kapat ✕</button></div>
+<div class="pdb emc"><p style="font-size:.9rem">Kodu kopyalayıp sitenin HTML’ine yapıştır. Gömme, yalnızca Hayalet Enerji Hesaplayıcısı ile tasarruf kartını gösterir; başka bölümler görünmez.</p>
+<label for="kh" style="margin-top:0">Yükseklik</label><select id="kh" style="width:100%;padding:9px 10px;border:1.5px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit"><option value="700">Küçük (700 px)</option><option value="900" selected>Orta (900 px)</option><option value="1100">Büyük (1100 px)</option></select>
+<label for="kcode">HTML kodu</label><textarea id="kcode" readonly aria-label="Gömme kodu"></textarea><div class="kerr" id="kcm" style="color:var(--green)" role="status"></div>
+<p class="note"><b>Not:</b> Gömme, bu sitenin yayın adresini kullanır. Barındırma hizmeti başka sitelerde çerçeve içinde gösterime izin vermiyorsa kutu boş görünebilir; bu sayfada gömmenin başka bir sitede çalıştığı test edilmemiştir.</p></div>
+<div class="pdf"><button type="button" class="kb p" id="kcc">Kodu kopyala</button></div></dialog>
+</div></section>
+
+<section class="blk gsec" id="grafikler" aria-labelledby="gt"><div class="wrap">
+<h2 class="t" id="gt">Enerji analiz grafikleri</h2>
+<p class="sub">Bu grafikler, yukarıdaki Hayalet Enerji Hesaplayıcısı'ndaki değerlerle çizilir. Hesaplayıcıyı değiştirdiğinde otomatik güncellenir. Video ve ağaç göstergeleri tahmini olduğu için grafiklere dahil edilmez.</p>
+<div class="dbadge" id="dbadge" role="status"></div>
+<div class="cgrid">
+<div class="cbox"><h3>Cihazlara göre yıllık enerji kaybı</h3><div class="cw"><canvas id="ch1" role="img" aria-label="Cihazlara göre yıllık enerji kaybı doughnut grafiği"></canvas><div class="nodata" id="nd1" hidden></div></div><p class="live" id="s1">–</p><p>Her dilim bir cihaz grubunun yıllık hayalet enerji payını (kWh) gösterir. Dilimin büyüklüğü, o grubun toplam kayıptaki payıdır.</p></div>
+<div class="cbox"><h3>Günlük, aylık ve yıllık enerji kaybı</h3><div class="cw"><canvas id="ch2" role="img" aria-label="Günlük, aylık ve yıllık enerji kaybı yığılmış çubuk grafiği"></canvas><div class="nodata" id="nd2" hidden></div></div><p class="live" id="s2">–</p><p>Çubuklar cihaz gruplarına göre yığılmıştır. Günlük kayıp, aylık (30 gün) ve yıllık (365 gün) süreye çarpılır; bu yüzden günlük çubuk çok küçük görünebilir.</p></div>
+<div class="cbox"><h3>Karbon emisyonu dağılımı</h3><div class="cw"><canvas id="ch3" role="img" aria-label="Cihazlara göre yıllık karbon emisyonu yatay çubuk grafiği"></canvas><div class="nodata" id="nd3" hidden></div></div><p class="live" id="s3">–</p><p>Yıllık kg CO₂ değeri, enerjinin 0,48 kg CO₂/kWh katsayısıyla çarpılmasıyla bulunur. Katsayı sabit olduğu için dağılım enerji payıyla aynı oranlardadır.</p></div>
+<div class="cbox"><h3>Birikmiş ekonomik kayıp (12 ay)</h3><div class="cw"><canvas id="ch4" role="img" aria-label="12 aylık birikmiş ekonomik kayıp çizgi grafiği"></canvas><div class="nodata" id="nd4" hidden></div></div><p class="live" id="s4">–</p><p>Çizgi, aylık maliyetin (30 gün × birim fiyat) her ay üst üste eklenmesini gösterir. Birim fiyatı değiştirdiğinde eğim değişir.</p></div>
+</div></div></section>
+
+<section class="blk hc gsec" id="kampus" aria-labelledby="kt"><div class="wrap">
+<h2 class="t" id="kt">Kampüs Çözüm Haritası</h2>
+<p class="sub">Fırat Üniversitesi binalarında ve yurtlarda gördüğün enerji israfını bildir, çözüm önerini paylaş. Bir binaya tıklayarak o binanın bildirimlerini filtreleyebilirsin.</p>
+<div class="kdemo" role="note"><b>Harita notu:</b> Harita şematiktir ve ölçekli değildir. Bina adları, Fırat Üniversitesi kampüsündeki enerji verimliliği projesinin resmi belgesinde (Çevre, Şehircilik ve İklim Değişikliği Bakanlığı, Şubat 2026) yer alan yapılardır. Belgede koordinatlar yalnızca görsel olarak verildiği için kesin koordinatlar doğrulanamadı; konumlar demo olarak yerleştirilmiştir. Güvenlik kuralları nedeniyle çevrimiçi harita altlığı da yüklenemedi. Bildirimler topluluk bildirimidir ve yetkili tarafından doğrulanana kadar "doğrulanmadı" etiketi taşır.</div>
+<div class="kgrid"><div class="kmap"><svg id="kmap" viewBox="0 0 640 395" role="group" aria-label="Fırat Üniversitesi kampüsü şematik haritası"></svg><p class="note" id="kmode"></p></div>
+<form class="kform" id="kform" novalidate onsubmit="return false"><h3>Enerji israfı bildir</h3>
+<label for="kb">Bina</label><select id="kb"></select>
+<label for="kr">Kat / sınıf / oda (isteğe bağlı)</label><input type="text" id="kr" maxlength="40" placeholder="Örn. 2. kat, D-204">
+<label for="kcat">Kategori</label><select id="kcat"></select>
+<label for="kd">Açıklama <span id="kdc">0/300</span></label><textarea id="kd" maxlength="300" placeholder="Ne görüyorsun? Örn. Ders bitmiş, projektör ve ışıklar açık kalmış."></textarea>
+<div class="kerr" id="kerr" role="alert"></div><div class="kok" id="kok" role="status"></div>
+<button class="kb p" id="ksend" type="button">Bildirimi gönder</button></form></div>
+<div class="kfil"><label for="kfb" style="margin:0">Bina:</label><select id="kfb"></select><label for="kfc" style="margin:0">Kategori:</label><select id="kfc"></select><button class="kb" id="kclr" type="button">Filtreyi temizle</button><span id="kstat"></span></div>
+<div id="klist"></div></div></section>
+
+<section class="blk" id="blog" aria-labelledby="bt" style="border-top:1px solid var(--line)"><div class="wrap">
+<h2 class="t" id="bt">Görünmez Maliyet Blogu</h2>
+<p class="sub">Gözle görülmeyen enerji maliyetlerini, veri merkezlerinden kampüs yaşamına kadar kısa ve anlaşılır yazılarla keşfet. Kategoriye göre filtreleyebilirsin.</p>
+<div class="bchips" id="bchips" role="group" aria-label="Blog kategorileri"></div>
+<p class="note" id="bcount" role="status" style="margin:0 0 14px"></p>
+<div class="bgrid" id="bgrid"></div></div></section>
+
+<section class="blk alt" id="podcast" aria-labelledby="pt1"><div class="wrap">
+<h2 class="t" id="pt1">Görünmez Maliyet Podcast’i</h2>
+<p class="sub">İki dakikada enerji israfı, görünmez tüketim ve sürdürülebilir yaşam. Dinle, senaryoyu oku, sonra kendi hesabını yap.</p>
+<div class="kdemo" role="note"><b>DEMO:</b> Gerçek bir ses kaydı yoktur. Ses, tarayıcının sesli okuma özelliğiyle senaryo metninden üretilir (cihazında Türkçe ses yoksa ses gelmeyebilir; bu durumda alt yazı modunda izleyebilirsin). Süre ve ilerleme kurgusaldır; gerçek kayıt eklendiğinde bu arayüze bağlanabilir.</div>
+<div class="pl"><svg viewBox="0 0 200 200" role="img" aria-label="Podcast kapağı: mikrofon ve ses dalgaları"><rect width="200" height="200" fill="#0f5a3c"/><circle cx="160" cy="36" r="46" fill="#fff" opacity=".1"/><rect x="82" y="38" width="36" height="70" rx="18" fill="#fff"/><path d="M66 92a34 34 0 0 0 68 0M100 126v22M78 150h44" stroke="#fff" stroke-width="7" fill="none" stroke-linecap="round"/><path d="M42 80q-10 14 0 28M158 80q10 14 0 28M28 68q-18 26 0 52M172 68q18 26 0 52" stroke="#8fd9ae" stroke-width="5" fill="none" stroke-linecap="round"/><text x="100" y="182" font-size="15" font-weight="800" text-anchor="middle" fill="#fff">Görünmez Maliyet</text></svg>
+<div><span class="demo" style="margin:0 0 6px;display:inline-block">DEMO</span><h3>Bölüm 1: Prizdeki Hayalet</h3><span class="bmeta" style="margin:0">2 dakika · Enerji israfı, görünmez tüketim, sürdürülebilir yaşam</span>
+<div class="pcap" id="pcap" aria-live="off"></div>
+<div class="pt"><input type="range" id="pseek" min="0" max="120" step="1" value="0" aria-label="Podcast ilerleme çubuğu"><span class="ptime" id="ptime">0:00 / 2:00</span></div>
+<div class="pctl"><button type="button" class="kb p" id="pplay">▶ Başlat</button><button type="button" class="kb" id="ppause" disabled>⏸ Duraklat</button><button type="button" class="kb" id="pscript">Senaryoyu göster</button>
+<label style="margin:0;display:flex;gap:6px;align-items:center;font-size:.85rem"><input type="checkbox" id="pspeak" checked> Tarayıcı sesiyle seslendir</label></div>
+<p class="note" id="pnote" style="margin-top:8px"></p>
+<div class="pcta" id="pcta" hidden><p>Podcast bitti. Şimdi sıra sende: kendi hayalet enerjini hesapla.</p><a class="btn" id="pgo" href="#hayalet">Hesaplayıcıya git</a></div></div></div>
+<dialog class="pdlg" id="pdlg" aria-labelledby="pdt"><div class="pdh"><h3 id="pdt">Podcast senaryosu: Prizdeki Hayalet</h3><button type="button" class="kb" id="pdx" aria-label="Senaryo penceresini kapat">Kapat ✕</button></div><div class="pdb" id="pdb"></div><div class="pdf"><a class="btn p" id="pdgo" href="#hayalet" style="padding:10px 18px">Hesaplayıcıya git</a></div></dialog>
+</div></section>
+
+<section class="blk" id="rehber" aria-labelledby="gt2"><div class="wrap">
+<h2 class="t" id="gt2">Düşük Bütçeli Enerji Tasarrufu Rehberi</h2>
+<p class="sub">Öğrenci evleri ve yurtlar için üç grupta toplanmış, uygulaması kolay öneriler. Her kartta tasarruf önerisi, uygulama adımları, gerekli malzemeler, tahmini maliyet ve beklenen enerji tasarrufu bulunur.</p>
+<div class="kdemo" role="note"><b>Fiyat ve tasarruf notu:</b> Maliyetler güncel piyasa fiyatı değil, <b>tahmini aralıklardır</b>; satın almadan önce kendi bölgendeki fiyatları kontrol et. Sayısal tasarruf değerleri ölçüm değil, sitedeki referans güçler ve kartta yazılı varsayımlarla yapılmış örnek hesaplardır (birim fiyat 4,5 TL/kWh varsayımı). Sayı verilemeyen önerilerde yalnızca nitel düzey belirtilmiştir. Ev sahibi veya yurt yönetimine ait tesisata izinsiz müdahale etme.</div>
+<div class="bchips" id="gchips" role="group" aria-label="Rehber kategorileri"></div>
+<p class="note" id="gcount" role="status" style="margin:0 0 14px"></p>
+<div class="bgrid" id="ggrid"></div>
+<div class="pcta" style="margin-top:22px"><p>Kendi evindeki ve yurdundaki kaybı görmek için cihaz sayılarını hesaplayıcıya gir.</p><a class="btn" href="#hayalet">Hesaplayıcıya git</a></div></div></section>
+
+<section class="blk alt" id="oyun" aria-labelledby="ot"><div class="wrap">
+<h2 class="t" id="ot">Tasarruf Oyunu: Görevler, Rozetler ve Sıralama</h2>
+<p class="sub">Her gün küçük görevleri tamamla, haftalık meydan okumaları bitir, rozet kazan ve hedefine ulaş. Puanların nasıl hesaplandığı aşağıda açıkça yazılıdır.</p>
+<div class="kdemo" role="note"><span class="demo" style="margin:0 6px 0 0">DEMO</span><b>Kişisel ilerleme yalnızca bu tarayıcıda saklanır.</b> Hesap veya merkezi veri tabanı yoktur; başka cihazda görünmez, tarayıcı verisi silinince kaybolur. Görevler kendi beyanına dayanır ve doğrulanmaz. Fakülte sıralaması örnek verilerle gösterilir; gerçek fakülte verisi değildir.</div>
+<div class="og">
+<div class="card"><h3>Haftalık tasarruf hedefin</h3><label for="ogn" style="margin-top:0">Hedef puan (10–550)</label>
+<div class="frow" style="display:flex;gap:12px;align-items:center"><input type="range" id="ogs" min="10" max="550" step="10" value="200" aria-label="Haftalık hedef puan (kaydırıcı)" style="flex:1;min-width:0"><input type="number" id="ogn" min="10" max="550" step="1" value="200" style="width:92px;padding:8px 10px;border:1.5px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit" aria-describedby="ogerr"></div>
+<div class="kerr" id="ogerr" role="alert"></div>
+<div class="pgb" role="progressbar" id="ogb" aria-label="Haftalık hedef ilerlemesi" aria-valuemin="0" aria-valuemax="100"><i id="ogf"></i></div><div id="ogt" style="font-size:.88rem"></div></div>
+<div class="card"><h3>Ekolojik profilin</h3><div id="opr" style="font-size:.95rem"></div><div class="pf" id="opf"></div></div>
+<div class="card"><h3>Bugünün görevleri</h3><ul class="tk" id="otk"></ul><div class="pgb" role="progressbar" id="otb" aria-label="Tamamlanan görev göstergesi" aria-valuemin="0" aria-valuemax="6"><i id="otf"></i></div><div id="ott" style="font-size:.88rem;font-weight:600" role="status"></div><div class="wk" id="owk"></div></div>
+<div><div class="card" style="margin-bottom:18px"><h3>Haftalık meydan okumalar</h3><div id="och"></div></div><div class="card"><h3>Rozetler</h3><div class="bd2" id="obd"></div></div></div>
+<div class="card full"><h3>Haftanın en verimli fakültesi <span class="demo">DEMO – örnek veri</span></h3><div style="overflow-x:auto"><table class="lb"><thead><tr><th>#</th><th>Fakülte</th><th>Toplam puan</th><th>Katılımcı</th><th>Kişi başı puan</th></tr></thead><tbody id="olb"></tbody></table></div><p class="note">Sıralama örnek sayılarla hesaplanır. Fakülte puanı = toplam puan ÷ katılımcı sayısı; en az 5 katılımcısı olmayan fakülteler sıralamaya alınmaz. Gerçek sıralama için hesap sistemi ve fakülte bazlı kayıt gerekir.</p></div>
+<div class="card full cr"><details open><summary style="cursor:pointer;font-weight:800;color:var(--deep)">Puanlama kriterleri (şeffaf puan tablosu)</summary><div id="ocr"></div></details></div>
+</div>
+<p class="note"><button type="button" class="kb" id="orst">İlerlememi sıfırla</button></p></div></section>
+
+<section class="blk hc" id="degerlendirme" aria-labelledby="dt"><div class="wrap">
+<h2 class="t" id="dt">Proje Değerlendirme Paneli</h2>
+<p class="sub">Projenin üç aşaması: Hazırlık, Saha Uygulaması ve Geri Bildirim. Her başlıkta faaliyetler ve tamamlanma durumu gösterilir.</p>
+<div class="kdemo" role="note"><b>Durum notu:</b> Hazırlık aşamasındaki durumlar bu sitenin geliştirme kayıtlarına dayanır. Saha uygulamasına dair bu sayfaya girilmiş bir kayıt yoktur; bu yüzden o faaliyetlerin durumu “bilgi yok” gösterilir ve yüzde hesaplanmaz. Proje ekibi gerçek durumu girdikçe güncellenmelidir. Tamamlanma yüzdesi: Tamamlandı = 1, Devam ediyor = 0,5, Başlamadı = 0 puan; “Bilgi yok” olanlar hesaba katılmaz.</div>
+<div class="evg" id="evg"></div>
+<h3 style="margin:0 0 6px;color:var(--deep)">Öğrenci Anketi</h3>
+<p class="sub" style="margin-bottom:12px">Enerji tasarrufu farkındalığı, proje hakkındaki görüşlerin ve uygulanabilir önerilerin hakkında 7 kısa soru. Ad, e-posta, telefon gibi kişisel bilgi yazma.</p>
+<div class="kdemo" role="note" style="border:1.5px solid var(--sun)"><b>Önemli:</b> Bu anket için bir veri tabanı kurulmamıştır. Cevapların yalnızca doğrulanır ve ekranda gösterilir; <b>hiçbir yere kaydedilmez veya gönderilmez</b>.</div>
+<form id="sform" novalidate onsubmit="return false"><div id="sq"></div>
+<div class="kerr" id="serr" role="alert"></div>
+<button type="button" class="kb p" id="ssend">Cevapları doğrula</button> <button type="button" class="kb" id="sclr">Formu temizle</button></form>
+<div class="sres" id="sres" hidden aria-live="polite"><p style="margin:0 0 8px"><b>Cevapların doğrulandı, ancak hiçbir yere kaydedilmedi veya gönderilmedi.</b> Paylaşmak istersen özeti kopyalayıp proje ekibine kendin iletebilirsin.</p><textarea id="sout" readonly aria-label="Cevap özeti"></textarea><div class="kerr" id="scp" style="color:var(--green)"></div><button type="button" class="kb" id="scopy">Özeti kopyala</button></div>
+</div></section>
+
+<section class="blk alt hc" id="pano" aria-labelledby="pnt"><div class="wrap">
+<h2 class="t" id="pnt">Fırat Üniversitesi Öğrencilerinin Yıllık Toplam Önlediği İsraf</h2>
+<p class="sub">Kampüs Toplam Tasarruf Panosu: öğrencilerin Hayalet Enerji Hesaplayıcısı’nda hesapladığı yıllık <b>potansiyel</b> tasarrufların anonim toplamı. Değerler ölçülmüş gerçek tasarruf değil, öğrencilerin kendi girdilerine dayanan beyandır.</p>
+<div class="psrc" id="psrc" role="status"></div>
+<div class="pst">
+<div class="pstat" role="group" id="pg1"><span class="pn" id="pn1" aria-hidden="true">0</span><span class="pu">kWh</span><small>Toplam enerji tasarrufu</small></div>
+<div class="pstat" role="group" id="pg2"><span class="pn" id="pn2" aria-hidden="true">0</span><span class="pu">kg CO₂</span><small>Önlenen karbon emisyonu (kWh × 0,48)</small></div>
+<div class="pstat" role="group" id="pg3"><span class="pn" id="pn3" aria-hidden="true">0</span><span class="pu">öğrenci</span><small>Katkıda bulunan öğrenci sayısı</small></div></div>
+<div class="pfac"><h3>En fazla tasarruf sağlayan fakülteler</h3><div id="pfl"></div><p class="note" id="pfn"></p></div>
+<div class="pcn">
+<div class="card"><h3>Hesaplayıcı sonucunu anonim katkı olarak paylaş</h3>
+<p style="margin:0 0 10px;font-size:.9rem" id="pcalc"></p>
+<label for="pfsel" style="margin-top:0">Fakültem</label><select id="pfsel"></select>
+<label class="chk" style="align-items:flex-start;font-weight:500;font-size:.86rem"><input type="checkbox" id="pcons" style="margin-top:3px"> <span>Yalnızca yıllık potansiyel tasarruf değerimin (kWh) ve fakültemin, adım veya e-postam olmadan, herkese açık toplamlarda kullanılmasına izin veriyorum. Katılımımı istediğimde geri çekebileceğimi biliyorum.</span></label>
+<div class="kerr" id="perr" role="alert"></div><div class="kok" id="pmsg" role="status"></div>
+<button type="button" class="kb p" id="psend">Katkımı gönder</button> <button type="button" class="kb" id="pwd" hidden>Katkımı geri çek</button></div>
+<div class="card"><h3>Veri toplama alt yapısı</h3><p class="note" style="margin:0" id="pcon"></p><ul>
+<li><b>Anonim gösterim:</b> Sayfada yalnızca toplamlar ve fakülte dağılımı gösterilir. Ad, e-posta, oda veya cihaz bilgisi toplanmaz. Teknik olarak kayıt, tekrarı önlemek için oturum kimliğine bağlı tek bir belge olarak tutulur; yani <i>takma adlıdır</i>, tamamen kimliksiz değildir.</li>
+<li><b>İzin:</b> Onay kutusu işaretlenmeden hiçbir şey gönderilmez; “geri çek” kaydı siler.</li>
+<li><b>Tekrar kontrolü:</b> Kişi başına tek kayıt vardır; yeniden gönderim sayarı artırmaz, kaydı günceller. Aynı değer tekrar gönderilirse reddedilir.</li>
+<li><b>Gizlilik eşiği:</b> Gerçek toplamlar en az 5 katılımcı olunca, fakülte sıralaması fakülte başına en az 5 katılımcı olunca gösterilir.</li>
+<li><b>Sınırlar:</b> Doğrulama tarayıcıda yapılır; sunucu tarafında tam denetim yoktur ve değerler beyandır. Fakülte listesi proje ekibince doğrulanmalıdır.</li></ul></div>
+</div></div></section>
+
+<section class="blk alt" id="hakkinda"><div class="wrap">
+<p class="slogan">Görünmez Enerjiyi Görünür Kıl!</p>
+<p class="sub">Görünmez Enerji, Fırat Üniversitesi öğrencilerinin erişilebilir ve temiz enerji hakkında bilinçlenmesi, enerji israfını fark etmesi ve tasarruf alışkanlığı kazanması için hazırlanan bir farkındalık projesidir. Enerji çoğu zaman gözle görülmez; açık bırakılan her cihaz ve gereksiz her ışık bir maliyet ve çevresel etki demektir.</p>
+<div class="grid g3">
+<div class="card"><div class="ico">👁️</div><h3>Enerjiyi görünür kıl</h3><p>Günlük yaşamdaki enerji kullanımını ve israfı fark etmeyi kolaylaştırmak.</p></div>
+<div class="card"><div class="ico">🎓</div><h3>Bilinçlendir</h3><p>Erişilebilir ve temiz enerji konusunda öğrencilere güvenilir bilgi sunmak.</p></div>
+<div class="card"><div class="ico">🌱</div><h3>Alışkanlık kazandır</h3><p>Küçük ve sürdürülebilir tasarruf davranışlarını günlük rutine dönüştürmek.</p></div>
+</div></div></section>
+
+<section class="blk" id="surdurulebilirlik"><div class="wrap">
+<h2 class="t">Sürdürülebilir kalkınma ve temiz enerji</h2>
+<p class="sub">Proje, Birleşmiş Milletler Sürdürülebilir Kalkınma Amaçları'ndan dördüyle doğrudan ilişkilidir.</p>
+<div class="grid g4">
+<div class="card skh"><b>AMAÇ<em>7</em></b><div><h3 style="margin-top:0">Erişilebilir ve temiz enerji</h3><p>Herkesin güvenilir ve temiz enerjiye ulaşabilmesi.</p></div></div>
+<div class="card skh"><b>AMAÇ<em>11</em></b><div><h3 style="margin-top:0">Sürdürülebilir şehirler</h3><p>Kampüs ve şehirlerde verimli enerji kullanımı.</p></div></div>
+<div class="card skh"><b>AMAÇ<em>12</em></b><div><h3 style="margin-top:0">Sorumlu tüketim</h3><p>Kaynakların israf edilmeden kullanılması.</p></div></div>
+<div class="card skh"><b>AMAÇ<em>13</em></b><div><h3 style="margin-top:0">İklim eylemi</h3><p>Karbon salımını azaltan bireysel tercihler.</p></div></div>
+</div></div></section>
+
+<section class="blk alt" id="baslangic"><div class="wrap">
+<h2 class="t">Tasarrufa hemen başla</h2>
+<p class="sub">Modüller hazırlanırken şimdiden uygulayabileceğin basit alışkanlıklar:</p>
+<ol class="tips">
+<li>Odadan çıkarken ışıkları ve prizdeki şarj aletlerini kapat.</li>
+<li>Bekleme modundaki cihazları (TV, bilgisayar, modem) tamamen kapat veya fişten çek.</li>
+<li>Mümkün olduğunda LED aydınlatma ve enerji verimli cihaz tercih et.</li>
+<li>Isıtma ve soğutmada oda sıcaklığını gereksiz yere uç değerlere ayarlama.</li>
+</ol></div></section>
+
+<section class="blk" id="moduller"><div class="wrap">
+<h2 class="t">Gelecek modüller</h2>
+<p class="sub">Aşağıdaki alanlar henüz geliştirilmedi. Modüller aşama aşama eklenecek ve bu bölümde yerini alacak.</p>
+<div class="grid g3">
+<div class="slot"><div class="ico">🧮</div><h3>Genel enerji hesaplama</h3><p>Hayalet enerji dışındaki tüketim hesaplamaları için ayrılmış alan.</p><span class="tag">Henüz geliştirilmedi</span></div>
+<div class="slot"><div class="ico">📊</div><h3>Genel veri paneli</h3><p>Hayalet enerji dışındaki verilerin gösterileceği alan.</p><span class="tag">Henüz geliştirilmedi</span></div>
+<div class="slot"><div class="ico">🗺️</div><h3>Temiz enerji haritası</h3><p>Yenilenebilir enerji kaynaklarının haritası için ayrılmış alan.</p><span class="tag">Henüz geliştirilmedi</span></div>
+<div class="slot"><div class="ico">☀️</div><h3>Yenilenebilir çözümler</h3><p>Güneş, rüzgar ve depolama çözümlerinin anlatılacağı alan.</p><span class="tag">Henüz geliştirilmedi</span></div>
+<div class="slot"><div class="ico">📰</div><h3>Haberler</h3><p>Enerji haberleri ve duyurular için ayrılmış alan.</p><span class="tag">Henüz geliştirilmedi</span></div>
+<div class="slot"><div class="ico">📚</div><h3>Kaynakça ve proje bilgisi</h3><p>Kaynaklar ve proje ekibi için ayrılmış alan.</p><span class="tag">Henüz geliştirilmedi</span></div>
+</div></div></section>
+</main>
+
+<footer><div class="wrap">
+<div class="fg">
+<div><h4>Görünmez Enerji</h4><p>Fırat Üniversitesi öğrencileri için erişilebilir ve temiz enerji farkındalık projesi.</p></div>
+<div><h4>Sayfa</h4><a href="#ana-sayfa">Ana Sayfa</a><a href="#hakkinda">Hakkında</a><a href="#surdurulebilirlik">Sürdürülebilirlik</a><a href="#moduller">Modüller</a></div>
+<div><h4>Temalar</h4><p>Temiz enerji · Enerji verimliliği · Sürdürülebilir kalkınma · İklim bilinci</p></div>
+</div>
+<div class="copy">© 2026 Görünmez Enerji. Bu bir öğrenci projesidir; Fırat Üniversitesi’nin resmî web sitesi değildir ve üniversite adına yayımlanmamıştır. Site geliştirme aşamasındadır; bazı bölümler henüz tamamlanmamıştır.</div>
+</div></footer>
+
+<script>
+const $=id=>document.getElementById(id);
+const fmt=n=>Math.round(n).toLocaleString('tr-TR');
+function calc(){
+  const kwh=+$('kwh').value,pn=+$('pnl').value,tr=+$('tarife').value,bat=$('bat').checked;
+  const yearUse=kwh*12,prod=pn*0.4*1500,self=bat?0.9:0.55;
+  const used=Math.min(prod*self,yearUse),pct=Math.min(100,used/yearUse*100);
+  $('kwhv').textContent=kwh+' kWh';$('pnlv').textContent=pn+' adet';$('tarv').textContent=tr.toFixed(1).replace('.',',');
+  $('pct').textContent='%'+Math.round(pct);$('ring').style.setProperty('--p',pct);
+  $('uret').textContent=fmt(prod)+' kWh';$('tas').textContent=fmt(used*tr)+' TL';
+  $('co2').textContent=(used*0.45/1000).toFixed(2).replace('.',',')+' ton';
+}
+['kwh','pnl','tarife','bat'].forEach(i=>$(i).addEventListener('input',calc));calc();
+$('theme').addEventListener('click',()=>{
+  const r=document.documentElement,d=getComputedStyle(r).getPropertyValue('--bg').trim()==='#0d1f18';
+  r.setAttribute('data-theme',d?'light':'dark');
+});
+</script>
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const P={a:0.25,l:5,p:150},CO2=0.48,DM=30,DY=365;
+const F=[
+{id:'an',g:'g1',t:'Boştaki adaptör sayısı',u:'adet',max:10000,sm:100,v:10,int:1},
+{id:'ah',g:'g1',t:'Günlük prizde kalma süresi',u:'saat/gün',max:24,sm:24,v:24,step:0.5},
+{id:'ln',g:'g2',t:'Bekleme modundaki laptop ve monitör sayısı',u:'adet',max:10000,sm:100,v:10,int:1},
+{id:'lh',g:'g2',t:'Günlük bekleme modunda kalma süresi',u:'saat/gün',max:24,sm:24,v:12,step:0.5},
+{id:'pn',g:'g3',t:'Açık bırakılan akıllı tahta ve projektör sayısı',u:'adet',max:10000,sm:50,v:2,int:1},
+{id:'ph',g:'g3',t:'Günlük açık kalma süresi',u:'saat/gün',max:24,sm:24,v:2,step:0.5},
+{id:'v1',g:'g4',t:'1080p video izleme süresi',u:'saat/gün',max:24,sm:24,v:1,step:0.5},
+{id:'v4',g:'g4',t:'4K video izleme süresi',u:'saat/gün',max:24,sm:24,v:0,step:0.5},
+{id:'pr',g:'g5',t:'Elektrik birim fiyatı',u:'TL/kWh',max:1000,sm:20,v:4.5,step:0.1,pos:1}
+];
+F.forEach(f=>{
+  $(f.g).insertAdjacentHTML('beforeend',`<div class="fld"><label for="${f.id}n">${f.t}</label><div class="frow"><input type="range" id="${f.id}s" min="0" max="${f.sm}" step="${f.int?1:(f.step||1)}" value="${Math.min(f.v,f.sm)}" aria-label="${f.t} (kaydırıcı)" tabindex="-1" style="tabindex:0"><input type="number" id="${f.id}n" value="${f.v}" min="0" max="${f.max}" step="${f.int?1:'any'}" inputmode="decimal" aria-describedby="${f.id}e"><span class="unit">${f.u}</span></div><div class="err" id="${f.id}e"></div></div>`);
+  $(f.id+'s').removeAttribute('tabindex');
+});
+const fm=(n,d)=>n.toLocaleString('tr-TR',{minimumFractionDigits:0,maximumFractionDigits:d});
+function chk(raw,badInput,f){
+  if(badInput)return['Geçerli bir sayı girin.'];
+  const s=String(raw).trim();
+  if(s==='')return['Bu alan boş bırakılamaz.'];
+  const n=Number(s);
+  if(!isFinite(n))return['Geçerli bir sayı girin.'];
+  if(n<0)return['Negatif değer girilemez.'];
+  if(f.pos&&n===0)return['Birim fiyat sıfırdan büyük olmalı.'];
+  if(f.int&&!Number.isInteger(n))return['Tam sayı girin.'];
+  if(n>f.max)return['En fazla '+fm(f.max,0)+' girilebilir.'];
+  return[null,n];
+}
+function opt(id,eid){
+  const el=$(id),s=el.value.trim();
+  if(el.validity.badInput){el.setAttribute('aria-invalid','true');$(eid).textContent='Geçerli bir sayı girin.';return{bad:1};}
+  if(s===''){el.removeAttribute('aria-invalid');$(eid).textContent='';return{};}
+  const n=Number(s);
+  if(!isFinite(n)||n<0||n>1e9){el.setAttribute('aria-invalid','true');$(eid).textContent=n<0?'Negatif değer girilemez.':'Geçerli bir değer girin.';return{bad:1};}
+  el.removeAttribute('aria-invalid');$(eid).textContent='';return{n};
+}
+function calc(){
+  const V={};let bad=0;
+  F.forEach(f=>{
+    const el=$(f.id+'n'),[e,n]=chk(el.value,el.validity.badInput,f);
+    $(f.id+'e').textContent=e||'';
+    if(e){el.setAttribute('aria-invalid','true');bad++;}else{el.removeAttribute('aria-invalid');V[f.id]=n;}
+  });
+  const w1=opt('w1080','w1080e'),w4=opt('w4k','w4ke'),tr=opt('tree','treee');
+  const dash=['e1','e2','e3','c1','c2','c3','k1','k2','k3'];
+  if(bad){
+    $('hcalert').innerHTML='<div class="alertbox" role="alert">Hatalı veya eksik giriş var. Kırmızı uyarıları düzelt; sonuçlar bunlar düzelene kadar gösterilmez.</div>';
+    dash.forEach(i=>$(i).textContent='–');$('sv').textContent='–';$('brk').innerHTML='';
+    $('vtxt').textContent='–';$('vout').textContent='';$('tout').textContent='';window.__hc={invalid:true};window.dispatchEvent(new Event('hc:update'));return;
+  }
+  $('hcalert').innerHTML='';
+  const src=[['Adaptörler',V.an*P.a*V.ah/1000],['Laptop/monitör',V.ln*P.l*V.lh/1000],['Akıllı tahta/projektör',V.pn*P.p*V.ph/1000]];
+  const d=src.reduce((s,x)=>s+x[1],0),pr=V.pr;
+  const per=[[d,'1'],[d*DM,'2'],[d*DY,'3']];
+  per.forEach(([e,k])=>{$('e'+k).textContent=fm(e,3);$('c'+k).textContent=fm(e*pr,2);$('k'+k).textContent=fm(e*CO2,3);});
+  const y=d*DY;
+  $('sv').innerHTML=d===0?'Girdilere göre hayalet enerji kaybı 0 olduğu için önlenecek bir kayıp yok.':'Cihazlar kapatılırsa yılda <b>'+fm(y,2)+' kWh</b>, <b>'+fm(y*pr,2)+' TL</b> ve <b>'+fm(y*CO2,2)+' kg CO₂</b> önlenir (aylık '+fm(d*DM,2)+' kWh, '+fm(d*DM*pr,2)+' TL).';
+  const mx=Math.max(...src.map(x=>x[1]),1e-12);
+  $('brk').innerHTML='<b style="font-size:.85rem">Yıllık kayıp dağılımı</b>'+src.map(x=>`<div class="bar2"><span>${x[0]}</span><i style="width:${(x[1]/mx*100).toFixed(1)}%"></i><span>${fm(x[1]*DY,2)} kWh</span></div>`).join('');
+  const h1=V.v1,h4=V.v4;
+  $('vtxt').textContent='Günlük izleme: 1080p '+fm(h1,1)+' saat, 4K '+fm(h4,1)+' saat (yılda '+fm(h1*DY,0)+' ve '+fm(h4*DY,0)+' saat).';
+  if(w1.bad||w4.bad)$('vout').textContent='';
+  else if(w1.n===undefined&&w4.n===undefined)$('vout').textContent='Tahmin hesaplanmadı: katsayı girilmedi.';
+  else if((h1>0&&w1.n===undefined)||(h4>0&&w4.n===undefined))$('vout').textContent='Tahmin hesaplanmadı: süresi girilen her çözünürlük için katsayı gerekli.';
+  else{const ek=((h1*(w1.n||0)+h4*(w4.n||0))*DY)/1000;$('vout').textContent='Tahmini yıllık video enerjisi: '+fm(ek,2)+' kWh, '+fm(ek*CO2,2)+' kg CO₂ (tahmin, toplama dahil değil).';}
+  if(tr.bad)$('tout').textContent='';
+  else if(!tr.n)$('tout').textContent=tr.n===0?'Katsayı sıfır olamaz.':'Tahmin hesaplanmadı: katsayı girilmedi.';
+  else $('tout').textContent='Tahmini ağaç eşdeğeri: yıllık '+fm(y*CO2/tr.n,2)+' ağaç (tahmin, toplama dahil değil).';
+  window.__hc={invalid:false,names:src.map(x=>x[0]),daily:src.map(x=>x[1]),pr:pr,co2:CO2,dm:DM,dy:DY};window.dispatchEvent(new Event('hc:update'));
+}
+F.forEach(f=>{
+  const s=$(f.id+'s'),n=$(f.id+'n');
+  s.addEventListener('input',()=>{n.value=s.value;calc();});
+  n.addEventListener('input',()=>{const v=Number(n.value);if(n.value!==''&&isFinite(v)&&v>=0)s.value=Math.min(v,f.sm);calc();});
+});
+['w1080','w4k','tree'].forEach(i=>$(i).addEventListener('input',calc));
+calc();
+})();
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const COL=['#8fd9ae','#1e8a50','#f5a524'];
+const fm=(n,d)=>n.toLocaleString('tr-TR',{minimumFractionDigits:0,maximumFractionDigits:d});
+const CH={};let touched=false;
+const th=()=>{const s=getComputedStyle(document.documentElement),g=k=>s.getPropertyValue(k).trim();return{ink:g('--ink'),mut:g('--muted'),line:g('--line'),green:g('--green')};};
+function base(t,lg){return{responsive:true,maintainAspectRatio:false,animation:{duration:250},plugins:{legend:{display:lg,position:'bottom',labels:{color:t.ink,boxWidth:12,font:{size:12}}},tooltip:{callbacks:{}}}};}
+function cfgs(d,t){
+  const n=d.names,y=d.daily.map(v=>v*d.dy),tot=y.reduce((a,b)=>a+b,0);
+  const ax=(ti,st)=>({stacked:!!st,beginAtZero:true,ticks:{color:t.mut},grid:{color:t.line},title:{display:!!ti,text:ti||'',color:t.mut}});
+  const cat=st=>({stacked:!!st,ticks:{color:t.mut},grid:{display:false}});
+  const o1=base(t,true);o1.cutout='58%';
+  o1.plugins.tooltip.callbacks.label=c=>' '+c.label+': '+fm(c.parsed,2)+' kWh/yıl (%'+fm(c.parsed/tot*100,1)+')';
+  const o2=base(t,true);o2.scales={x:cat(true),y:ax('kWh',true)};
+  o2.plugins.tooltip.callbacks.label=c=>' '+c.dataset.label+': '+fm(c.parsed.y,3)+' kWh';
+  const o3=base(t,false);o3.indexAxis='y';o3.scales={x:ax('kg CO₂ / yıl'),y:cat()};
+  const co=tot*d.co2;
+  o3.plugins.tooltip.callbacks.label=c=>' '+fm(c.parsed.x,2)+' kg CO₂ (%'+fm(c.parsed.x/co*100,1)+')';
+  const mc=tot/d.dy*d.dm*d.pr;
+  const o4=base(t,false);o4.scales={x:cat(),y:ax('TL')};
+  o4.plugins.tooltip.callbacks.label=c=>' Birikmiş kayıp: '+fm(c.parsed.y,2)+' TL';
+  const mo=Array.from({length:12},(_,i)=>i+1);
+  return{
+    c1:{type:'doughnut',data:{labels:n,datasets:[{data:y,backgroundColor:COL,borderColor:'transparent',borderWidth:0}]},options:o1},
+    c2:{type:'bar',data:{labels:['Günlük','Aylık','Yıllık'],datasets:n.map((nm,i)=>({label:nm,data:[d.daily[i],d.daily[i]*d.dm,d.daily[i]*d.dy],backgroundColor:COL[i],borderRadius:3}))},options:o2},
+    c3:{type:'bar',data:{labels:n,datasets:[{label:'Yıllık emisyon (kg CO₂)',data:y.map(v=>v*d.co2),backgroundColor:COL,borderRadius:4}]},options:o3},
+    c4:{type:'line',data:{labels:mo.map(m=>'Ay '+m),datasets:[{label:'Birikmiş kayıp (TL)',data:mo.map(m=>m*mc),borderColor:t.green,backgroundColor:'rgba(30,138,80,.18)',fill:true,tension:.25,pointRadius:3}]},options:o4},
+    tot:tot,co:co,mc:mc
+  };
+}
+function show(msg){
+  for(let i=1;i<=4;i++){const nd=$('nd'+i);nd.hidden=!msg;nd.textContent=msg||'';$('ch'+i).style.visibility=msg?'hidden':'visible';if(msg)$('s'+i).textContent='–';}
+}
+function put(id,c){
+  if(CH[id]){CH[id].data=c.data;CH[id].options=c.options;CH[id].update('none');}
+  else CH[id]=new Chart($(id),c);
+}
+function render(){
+  const d=window.__hc;if(!d)return;
+  $('dbadge').textContent=touched?'Girdiğin değerlere göre hesaplandı.':'Örnek girdiler gösteriliyor; bunlar gerçek kullanıcı verisi değildir. Hesaplayıcıdaki değerleri kendi durumuna göre değiştir.';
+  if(d.invalid){show('Hesaplayıcıda hatalı giriş var. Düzelttiğinde grafikler güncellenir.');return;}
+  const t=th(),c=cfgs(d,t);
+  if(!(c.tot>0)){show('Tüm değerler 0 olduğu için gösterilecek bir enerji kaybı yok.');return;}
+  if(typeof Chart==='undefined'){show('Grafik kitaplığı yüklenemedi. İnternet bağlantını kontrol et.');return;}
+  show('');
+  Chart.defaults.font.family='"Plus Jakarta Sans",system-ui,sans-serif';Chart.defaults.color=t.mut;
+  put('ch1',c.c1);put('ch2',c.c2);put('ch3',c.c3);put('ch4',c.c4);
+  const y=d.daily.map(v=>v*d.dy),k=y.indexOf(Math.max.apply(null,y));
+  $('s1').textContent='En büyük pay: '+d.names[k]+' (%'+fm(y[k]/c.tot*100,1)+'). Toplam: '+fm(c.tot,2)+' kWh/yıl.';
+  const dd=c.tot/d.dy;
+  $('s2').textContent='Günlük '+fm(dd,3)+' kWh → aylık '+fm(dd*d.dm,2)+' kWh → yıllık '+fm(c.tot,2)+' kWh.';
+  $('s3').textContent='Yıllık toplam '+fm(c.co,2)+' kg CO₂; en çok '+d.names[k]+' kaynaklı (%'+fm(y[k]/c.tot*100,1)+').';
+  $('s4').textContent='12. ayın sonunda birikmiş kayıp: '+fm(c.mc*12,2)+' TL (12 × 30 gün; birim fiyat '+fm(d.pr,2)+' TL/kWh). Hesaplayıcıdaki yıllık değer 365 gün üzerinden olduğu için biraz farklıdır.';
+}
+window.__hcCharts={cfgs:cfgs};
+window.addEventListener('hc:update',render);
+$('hcform').addEventListener('input',()=>{touched=true;render();});
+new MutationObserver(render).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+if(window.matchMedia)window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',render);
+render();
+})();
+</script>
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const B=[['ataturk','Atatürk Kültür Merkezi',30,30,120,60],['kutuphane','Kütüphane',170,30,110,60],['rektorluk','Rektörlük',300,30,110,60],['konukevi','Konukevi',430,30,100,60],['bilgmet','Bilgisayar, Metalurji ve Malzeme Müh.',30,120,150,70],['elektrik','Elektrik-Elektronik Müh.',200,120,130,70],['insaat','İnşaat Müh.',350,120,110,70],['jeoloji','Jeoloji Müh.',480,120,120,70],['makine','Makine Müh.',30,220,130,70],['makineek','Makine Müh. Ek Bina',180,220,130,70],['dekanlik','Mühendislik Fak. Dekanlığı',330,220,130,70],['metal','Teknoloji Fak. Metal Atölyesi',480,220,120,70],['kimya','Kimya Müh. Laboratuvarı',30,320,150,55],['yurt','Sare Ana Kız Öğrenci Yurdu',200,320,150,55]];
+const BS={bilgmet:['Bilgisayar/Metalurji','ve Malzeme Müh.'],ataturk:['Atatürk','Kültür Merkezi'],dekanlik:['Müh. Fak.','Dekanlığı'],metal:['Teknoloji Fak.','Metal Atölyesi'],kimya:['Kimya Müh.','Laboratuvarı'],yurt:['Sare Ana Kız','Öğrenci Yurdu'],elektrik:['Elektrik-','Elektronik Müh.'],makineek:['Makine Müh.','Ek Bina']};
+const CATS=['Aydınlatma açık kalmış','Cihaz bekleme modunda','Projektör/akıllı tahta açık','Isıtma-soğutma/pencere sorunu','Su veya sıcak su israfı','Diğer'];
+const BN=id=>(B.find(b=>b[0]===id)||[])[1]||'';
+const DEMO=[{u:'demo',id:'d1',ts:0,b:'dekanlik',room:'Derslik',c:CATS[2],d:'Örnek: Ders bitmiş, projektör ve ışıklar açık kalmış.',demo:1},{u:'demo',id:'d2',ts:0,b:'yurt',room:'Ortak alan',c:CATS[1],d:'Örnek: Ortak alandaki cihazlar gece boyunca bekleme modunda.',demo:1}];
+const DS=[{u:'demo',id:'ds1',rid:'d1',ts:0,t:'Örnek: Son çıkan kişi için kapı yanına bir kapatma hatırlatma etiketi konabilir.'}];
+let mode='local',db=null,me=null,admin=false,store={},unsub=null,flt={b:'',c:''};
+const LK='ge_kampus_v1';
+function loadLocal(){try{const v=JSON.parse(localStorage.getItem(LK));if(v&&Array.isArray(v.reports))store.local={reports:v.reports,suggestions:Array.isArray(v.suggestions)?v.suggestions:[]};}catch(e){}if(!store.local)store.local={reports:[],suggestions:[]};}
+const uid=()=>mode==='shared'?me:'local';
+const mine=()=>store[uid()]||{reports:[],suggestions:[]};
+const clone=o=>JSON.parse(JSON.stringify(o));
+async function persist(u,data){
+  if(mode==='shared'){try{await db.doc('kampus/'+u).set(data);return true;}catch(e){toLocal('Paylaşılan kayda yazılamadı (yazma izni yok). Veriler yalnızca bu cihazda tutulacak.');return false;}}
+  try{localStorage.setItem(LK,JSON.stringify(data));}catch(e){}return true;
+}
+function toLocal(msg){if(unsub)unsub();unsub=null;mode='local';store={};loadLocal();window.__knote=msg;render();}
+function el(t,c,x){const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e;}
+function vText(s,min,max,l){s=String(s||'').replace(/\s+/g,' ').trim();if(s.length<min)return[l+' en az '+min+' karakter olmalı.'];if(s.length>max)return[l+' en fazla '+max+' karakter olabilir.'];if(/[<>]/.test(s))return[l+' "<" veya ">" içeremez.'];if(/(https?:|www\.|@)/i.test(s))return[l+' bağlantı veya e-posta içeremez.'];if(/(.)\1{7,}/.test(s))return[l+' anlamsız tekrar içeriyor.'];return[null,s];}
+function validateReport(f){
+  if(!B.some(b=>b[0]===f.b))return['Listeden geçerli bir bina seç.'];
+  if(!CATS.includes(f.c))return['Listeden geçerli bir kategori seç.'];
+  let r=String(f.r||'').replace(/\s+/g,' ').trim();
+  if(r.length>40)return['Oda bilgisi en fazla 40 karakter olabilir.'];
+  if(r&&!/^[\p{L}\p{N} .,\-\/()]+$/u.test(r))return['Oda bilgisinde yalnızca harf, rakam ve . , - / ( ) kullanılabilir.'];
+  const[e,d]=vText(f.d,10,300,'Açıklama');if(e)return[e];
+  return[null,{b:f.b,room:r,c:f.c,d:d}];
+}
+function cooldown(){try{const t=+localStorage.getItem('ge_k_last')||0;const w=30000-(Date.now()-t);return w>0?Math.ceil(w/1000):0;}catch(e){return 0;}}
+function stamp(){try{localStorage.setItem('ge_k_last',String(Date.now()));}catch(e){}}
+function allItems(){
+  const R=[],S=[];
+  Object.keys(store).forEach(u=>{const d=store[u]||{};(d.reports||[]).forEach(r=>R.push(Object.assign({u:u},r)));(d.suggestions||[]).forEach(s=>S.push(Object.assign({u:u},s)));});
+  return{R:R.concat(DEMO).sort((a,b)=>b.ts-a.ts),S:S.concat(DS)};
+}
+function ago(ts){return ts?new Date(ts).toLocaleString('tr-TR',{dateStyle:'short',timeStyle:'short'}):'';}
+function drawMap(R){
+  const NS='http://www.w3.org/2000/svg',svg=$('kmap');svg.textContent='';
+  const bg=document.createElementNS(NS,'rect');bg.setAttribute('width','640');bg.setAttribute('height','395');bg.setAttribute('rx','12');bg.setAttribute('fill','none');svg.appendChild(bg);
+  B.forEach(b=>{
+    const g=document.createElementNS(NS,'g');g.setAttribute('class','bg'+(flt.b===b[0]?' sel':''));g.setAttribute('role','button');g.setAttribute('tabindex','0');
+    const n=R.filter(r=>r.b===b[0]&&!r.demo).length;
+    g.setAttribute('aria-label',b[1]+(n?', '+n+' bildirim':', bildirim yok')+(flt.b===b[0]?', seçili':''));
+    const rc=document.createElementNS(NS,'rect');['x','y','width','height'].forEach((k,i)=>rc.setAttribute(k,b[i+2]));rc.setAttribute('rx','8');rc.setAttribute('class','bl');g.appendChild(rc);
+    const L=BS[b[0]]||[b[1]];L.forEach((s,i)=>{const t=document.createElementNS(NS,'text');t.setAttribute('class','bt');t.setAttribute('x',b[2]+b[4]/2);t.setAttribute('y',b[3]+b[5]/2+(L.length>1?(i?7:-5):4));t.textContent=s;g.appendChild(t);});
+    if(n){const c=document.createElementNS(NS,'circle');c.setAttribute('class','bc');c.setAttribute('cx',b[2]+b[4]-8);c.setAttribute('cy',b[3]+8);c.setAttribute('r','10');g.appendChild(c);const t=document.createElementNS(NS,'text');t.setAttribute('class','bn');t.setAttribute('x',b[2]+b[4]-8);t.setAttribute('y',b[3]+12);t.textContent=n;g.appendChild(t);}
+    const pick=()=>{flt.b=flt.b===b[0]?'':b[0];$('kfb').value=flt.b;if(flt.b)$('kb').value=b[0];render();};
+    g.addEventListener('click',pick);g.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();pick();}});
+    svg.appendChild(g);
+  });
+}
+function card(r,S,canMod){
+  const c=el('div','kc');
+  const tg=el('div');tg.appendChild(el('span','kt',r.c));
+  if(r.demo)tg.appendChild(el('span','kt dm','DEMO – örnek, gerçek bildirim değil'));
+  else tg.appendChild(el('span','kt'+(r.v?' ok':''),r.v?'Doğrulandı':'Doğrulanmadı (topluluk bildirimi)'));
+  c.appendChild(tg);c.appendChild(el('h4',null,BN(r.b)+(r.room?' – '+r.room:'')));c.appendChild(el('p',null,r.d));
+  if(r.ts)c.appendChild(el('small',null,ago(r.ts)));
+  const mi=r.u===uid()||r.u==='local';
+  S.filter(s=>s.rid===r.id).forEach(s=>{const d=el('div','ks');d.appendChild(el('div',null,s.t));if(s.ts)d.appendChild(el('small',null,ago(s.ts)+' '));if(!s.id.startsWith('ds')&&(s.u===uid()||admin)){const x=el('button','kb','Sil');x.type='button';x.style.marginLeft='6px';x.addEventListener('click',()=>del('s',s));d.appendChild(x);}c.appendChild(d);});
+  if(!r.demo){
+    const a=el('div','kact');const i=el('input');i.type='text';i.maxLength=200;i.placeholder='Çözüm önerin (10–200 karakter)';i.setAttribute('aria-label','Çözüm önerisi');
+    const b=el('button','kb p','Öneri paylaş');b.type='button';const er=el('div','kerr');er.setAttribute('role','alert');
+    b.addEventListener('click',()=>addSugg(r,i,er));a.appendChild(i);a.appendChild(b);
+    if(r.u===uid()||admin){const x=el('button','kb','Bildirimi sil');x.type='button';x.addEventListener('click',()=>del('r',r));a.appendChild(x);}
+    if(admin){const v=el('button','kb',r.v?'Doğrulamayı kaldır':'Doğrulandı işaretle');v.type='button';v.addEventListener('click',()=>verify(r));a.appendChild(v);}
+    c.appendChild(a);c.appendChild(er);
+  }
+  return c;
+}
+function render(){
+  const{R,S}=allItems();drawMap(R);
+  const list=R.filter(r=>(!flt.b||r.b===flt.b)&&(!flt.c||r.c===flt.c));
+  const L=$('klist');L.textContent='';
+  list.forEach(r=>L.appendChild(card(r,S)));
+  if(!list.length)L.appendChild(el('p','note','Bu filtreye uyan bildirim yok.'));
+  const real=R.filter(r=>!r.demo).length;
+  $('kstat').textContent=real+' bildirim, '+S.filter(s=>!s.id.startsWith('ds')).length+' öneri (demo kayıtlar sayılmaz).';
+  $('kmode').textContent=mode==='shared'?'Paylaşılan kayıt: bildirimler bu sayfayı açan oturum açmış kullanıcılarla paylaşılır.':'Yerel kayıt: bildirimler yalnızca bu tarayıcıda saklanır ve başkalarına görünmez. Bu sürümde ortak (paylaşılan) kayıt yoktur.';
+  if(window.__knote&&mode==='local')$('kmode').textContent+=' '+window.__knote;
+}
+async function del(kind,x){
+  if(!confirm('Silinsin mi?'))return;
+  const d=clone(store[x.u]||{reports:[],suggestions:[]});
+  if(kind==='r'){d.reports=d.reports.filter(r=>r.id!==x.id);}else d.suggestions=d.suggestions.filter(s=>s.id!==x.id);
+  if(await persist(x.u,d))store[x.u]=d;render();
+}
+async function verify(r){const d=clone(store[r.u]||{reports:[],suggestions:[]});const t=d.reports.find(q=>q.id===r.id);if(!t)return;t.v=!t.v;if(await persist(r.u,d))store[r.u]=d;render();}
+async function addSugg(r,inp,er){
+  er.textContent='';const w=cooldown();if(w){er.textContent='Lütfen '+w+' saniye bekle.';return;}
+  const[e,t]=vText(inp.value,10,200,'Öneri');if(e){er.textContent=e;inp.setAttribute('aria-invalid','true');return;}
+  const d=clone(mine());d.suggestions=d.suggestions||[];
+  if(d.suggestions.length>=60){er.textContent='Öneri sınırına ulaştın (60).';return;}
+  if(d.suggestions.some(s=>s.rid===r.id&&s.t.toLowerCase()===t.toLowerCase())){er.textContent='Bu öneriyi zaten paylaştın.';return;}
+  const sg={id:'s'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),rid:r.id,ts:Date.now(),t:t};d.suggestions.push(sg);
+  stamp();const k=uid();
+  if(await persist(k,d))store[uid()]=d;
+  else if(mode==='local'){const d2=clone(mine());d2.suggestions=d2.suggestions||[];d2.suggestions.push(sg);if(await persist('local',d2))store.local=d2;}
+  render();
+}
+async function send(){
+  const er=$('kerr'),ok=$('kok');er.textContent='';ok.textContent='';
+  ['kb','kr','kcat','kd'].forEach(i=>$(i).removeAttribute('aria-invalid'));
+  const[e,v]=validateReport({b:$('kb').value,r:$('kr').value,c:$('kcat').value,d:$('kd').value});
+  if(e){er.textContent=e;$(/Bina|bina/.test(e)?'kb':/kategori/.test(e)?'kcat':/Oda/.test(e)?'kr':'kd').setAttribute('aria-invalid','true');return;}
+  const w=cooldown();if(w){er.textContent='Yeni bildirim için '+w+' saniye bekle.';return;}
+  const d=clone(mine());d.reports=d.reports||[];
+  if(d.reports.length>=30){er.textContent='Bildirim sınırına ulaştın (30).';return;}
+  if(d.reports.some(r=>r.b===v.b&&r.c===v.c&&r.d.toLowerCase()===v.d.toLowerCase())){er.textContent='Aynı bildirimi zaten gönderdin.';return;}
+  const it={id:'r'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),ts:Date.now(),b:v.b,room:v.room,c:v.c,d:v.d};d.reports.unshift(it);
+  stamp();
+  let saved=await persist(uid(),d);
+  if(saved)store[uid()]=d;
+  else if(mode==='local'){const d2=clone(mine());d2.reports=d2.reports||[];d2.reports.unshift(it);saved=await persist('local',d2);if(saved)store.local=d2;}
+  $('kd').value='';$('kr').value='';$('kdc').textContent='0/300';ok.textContent=saved?(mode==='shared'?'Bildirim kaydedildi. Teşekkürler!':'Bildirim yalnızca bu cihazda kaydedildi.'):'Bildirim kaydedilemedi.';render();
+}
+B.forEach(b=>{[$('kb'),$('kfb')].forEach((s,i)=>{const o=el('option',null,b[1]);o.value=b[0];s.appendChild(o);});});
+const o0=el('option',null,'Tümü');o0.value='';$('kfb').insertBefore(o0,$('kfb').firstChild);$('kfb').value='';
+const c0=el('option',null,'Tümü');c0.value='';$('kfc').appendChild(c0);
+CATS.forEach(c=>{[$('kcat'),$('kfc')].forEach(s=>{const o=el('option',null,c);o.value=c;s.appendChild(o);});});
+$('ksend').addEventListener('click',send);
+$('kd').addEventListener('input',()=>{$('kdc').textContent=$('kd').value.length+'/300';});
+$('kfb').addEventListener('change',()=>{flt.b=$('kfb').value;render();});
+$('kfc').addEventListener('change',()=>{flt.c=$('kfc').value;render();});
+$('kclr').addEventListener('click',()=>{flt={b:'',c:''};$('kfb').value='';$('kfc').value='';render();});
+window.__kampus={validateReport:validateReport,vText:vText,B:B,CATS:CATS};
+loadLocal();render();
+(async()=>{
+  try{
+    const c=window.claude;if(!c||!c.use)return;
+    const d=await c.use('db'),u=await c.use('user');if(!d||!u)return;
+    const id=await u.id();if(!id)return;
+    if((await u.can('data.write'))===false)return;
+    db=d;me=id;admin=!!(await u.canEdit());mode='shared';store={};
+    unsub=db.collection('kampus').onSnapshot(s=>{const n={};s.docs.forEach(x=>{n[x.id]=x.data();});store=n;render();},()=>{toLocal('Paylaşılan veriye ulaşılamadı; yerel kayıt kullanılıyor.');});
+    render();
+  }catch(e){}
+})();
+})();
+</script>
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const CATS=[['hayalet','Hayalet enerji tüketimi','#1e8a50'],['veri','Veri merkezlerinin enerji ihtiyacı','#2f7fd1'],['karbon','Dijital dünyanın karbon ayak izi','#6a5acd'],['gunluk','Günlük enerji tasarrufu','#d98e0a'],['kampus','Sürdürülebilir kampüs yaşamı','#0f5a3c']];
+const ART=[
+{id:'a1',c:'hayalet',t:'Prizdeki adaptör gerçekten bedava mı?',d:'Küçük bir adaptörün bekleme gücü ufak görünür; ama sayı ve zaman çarpınca fatura görünür hale gelir.',
+b:['Hayalet enerji, bir cihaz kullanılmıyorken bile prizden çektiği güçtür. Şarj aleti prize takılı ama telefona bağlı değilse, ya da bilgisayar kapalı görünse de bekleme modundaysa enerji harcamaya devam eder.',['h','Basit bir örnek'],'Bu sitedeki Hayalet Enerji Hesaplayıcısı’nın referans değerini kullanalım: boştaki bir adaptör için 0,25 W. Formül: Enerji (kWh) = Güç (W) × Süre (saat) / 1000.',['ul',['10 adaptör × 0,25 W × 24 saat = 60 Wh, yani günde 0,06 kWh.','Bir yılda 0,06 × 365 = 21,9 kWh.','4,5 TL/kWh birim fiyatla yaklaşık 98,55 TL.','0,48 kg CO₂/kWh katsayısıyla yaklaşık 10,5 kg CO₂.']],['n','Bu bir örnek hesaptır. Gerçek güç değeri adaptörün türüne ve markasına göre değişir; referans değerler hesaplayıcıdaki varsayımlardır.'],['h','Ne yapabilirsin?'],'Kullanmadığın adaptörleri prizden çek ya da anahtarlı bir çoklu prizle tek hamlede kapat. Kendi sayılarını hesaplayıcıya girerek farkı görebilirsin.']},
+{id:'a2',c:'hayalet',t:'Açık kalan projektör: sınıfın görünmeyen faturası',d:'Ders bitti, ışıklar söndü ama projektör ya da akıllı tahta açık kaldı. Bir yılda ne kadar tutar?',
+b:['Akıllı tahta ve projektör gibi cihazlar bekleme modundaki küçük cihazlardan çok daha fazla güç çeker. Hesaplayıcıdaki referans değer 150 W’tır.',['h','Örnek hesap'],['ul',['2 projektör × 150 W × 2 saat = 600 Wh, yani günde 0,6 kWh.','Bir yılda 0,6 × 365 = 219 kWh.','4,5 TL/kWh ile yaklaşık 985,5 TL.','0,48 kg CO₂/kWh ile yaklaşık 105,1 kg CO₂.']],['n','Örnek, her gün 2 saat gereksiz açık kalma varsayar. Gerçek durum kampüsteki kullanım düzenine göre değişir.'],'Dersin son çıkanı için kapı yanında bir “kapat” hatırlatması ya da otomatik kapanma ayarı basit ve etkili çözümlerdir. Kampüs Çözüm Haritası’ndan bu tür bir durumu bildirebilirsin.']},
+{id:'a3',c:'veri',t:'Veri merkezleri ne kadar elektrik kullanıyor?',d:'Uluslararası Enerji Ajansı’nın verileriyle veri merkezlerinin bugünkü ve beklenen elektrik talebi.',
+b:['Her arama, video ve bulut dosyası bir veri merkezinde çalışan sunuculara dayanır. Bu sunucular ve onları soğutan sistemler elektrik tüketir.',['h','Rakamlar'],['ul',['Uluslararası Enerji Ajansı (IEA), veri merkezlerinin 2024’te yaklaşık 415 TWh elektrik tükettiğini, bunun dünya elektrik tüketiminin yaklaşık %1,5’i olduğunu belirtiyor.','Temel senaryoda bu tüketim 2030’a kadar yaklaşık 945 TWh’e, yani küresel talebin yaklaşık %3’üne çıkıyor.','2024’te tüketimin yaklaşık %45’i ABD’de, %25’i Çin’de ve %15’i Avrupa’da gerçekleşti.','Soğutmanın payı verimli büyük veri merkezlerinde yaklaşık %7 iken verimsiz kurumsal merkezlerde %30’un üzerine çıkabiliyor.']],['h','Neden önemli?'],'Küresel pay küçük görünse de veri merkezleri belirli bölgelerde yoğunlaştığı için o bölgelerdeki şebekeye büyük yük bindirebiliyor. Yapay zekâ, talep artışının en önemli etkenlerinden biri olarak gösteriliyor.',['src','Kaynak: IEA, Energy and AI raporu (2025), iea.org/reports/energy-and-ai']]},
+{id:'a4',c:'karbon',t:'Dijital karbon ayak izi nasıl hesaplanır?',d:'Karbon hesabı iki adımdır: enerjiyi bul, sonra emisyon katsayısıyla çarp. Peki video izlemek için güvenilir bir katsayı var mı?',
+b:['Dijital bir faaliyetin karbon ayak izi, kullanılan elektriğin (kWh) o elektriği üreten sistemin emisyon katsayısıyla çarpılmasıyla bulunur. Bu sitedeki hesaplayıcı 0,48 kg CO₂/kWh katsayısını referans alır.',['h','Üç parça'],['ul',['Kullandığın cihaz (telefon, laptop, monitör).','Veriyi taşıyan ağ.','Veriyi işleyen ve saklayan veri merkezi.']],['h','Belirsizlik payı'],'Video akışı gibi faaliyetler için herkesçe kabul edilmiş tek bir doğrulanmış katsayı yoktur; farklı çalışmalar farklı varsayımlarla farklı sonuçlar verir. Bu yüzden Hayalet Enerji Hesaplayıcısı video izlemeyi ve ağaç eşdeğerliğini toplam sonuca katmaz; yalnızca isteğe bağlı tahmini gösterge olarak sunar.',['n','Bir kaynakta gördüğün “bir saat video = X gram CO₂” gibi değerleri sorgula: hangi cihaz, ağ ve elektrik karışımı varsayıldığına bak.'],'Emin olmadığın bir sayıyı kesin gibi paylaşmamak, iyi bir dijital karbon okuryazarlığının parçasıdır.']},
+{id:'a5',c:'gunluk',t:'Beş dakikalık enerji tasarrufu alışkanlıkları',d:'Davranışını büyük değiştirmeden uygulayabileceğin, görünmez kayıpları azaltan küçük adımlar.',
+b:['Tasarruf için çoğu zaman yeni bir cihaz almak gerekmez; önce kaybı görünür kılmak yeter.',['h','Bugün başlayabileceklerin'],['ul',['Odadan çıkarken ışıkları kapat.','Kullanmadığın adaptör ve şarj aletlerini prizden çek ya da anahtarlı çoklu prizle kapat.','Bilgisayarı, monitörü ve modemi uzun süre kullanmayacaksan tamamen kapat; bekleme modunda bırakma.','Aydınlatmada mümkünse LED tercih et.','Isıtma ve soğutmada pencereleri açık bırakma.']],['h','Etkisini ölç'],'Hayalet Enerji Hesaplayıcısı’na kendi cihaz sayılarını girip günlük, aylık ve yıllık kaybını gör. Grafikler hangi cihaz grubunun payının büyük olduğunu gösterir; önce onu çöz.']},
+{id:'a6',c:'kampus',t:'Kampüste enerji verimliliği: bir proje örneği',d:'Fırat Üniversitesi kampüsündeki 13 bina için planlanan yalıtım, LED ve güneş enerjisi çalışmaları.',
+b:['Çevre, Şehircilik ve İklim Değişikliği Bakanlığı’nın Dünya Bankası destekli “Kamu Binalarında Deprem Dayanıklılığı ve Enerji Verimliliği” projesi kapsamında Fırat Üniversitesi kampüsündeki 13 binada güçlendirme ve enerji verimliliği odaklı iyileştirme çalışmaları planlanıyor. Çalışmaların 2026’nın ilk çeyreği ile 2027’nin ilk çeyreği arasında yürütülmesi öngörülüyor.',['h','Planlanan enerji verimliliği işleri'],['ul',['Duvar ve çatılara ısı yalıtımı.','Pencerelerin çift camlı, ısı ve güneş kontrol kaplamalı PVC doğramalarla değiştirilmesi.','6.408 verimsiz aydınlatma armatürünün LED ile değiştirilmesi.','Bina otomasyonu ile enerji izleme ve ölçüm sistemi kurulması.','Grup-1 binalarını besleyecek 805 kWp gücünde yer üstü güneş enerjisi santrali.']],['h','Öğrenci olarak ne yapabilirsin?'],'Altyapı iyileşse bile kullanım alışkanlıkları fark yaratır. Boş sınıfta açık kalan ışık, projektör ya da cihazı Kampüs Çözüm Haritası’ndan bildirebilir, çözüm önerini paylaşabilirsin.',['n','Bu yazı planlanan işleri anlatır; işlerin ne zaman ve hangi ölçüde tamamlandığını üniversitenin duyurularından kontrol et.'],['src','Kaynak: ÇŞİDB, Fırat Üniversitesi Grup-1 Binaları Çevresel ve Sosyal Yönetim Planı, Şubat 2026']]}
+];
+function art(c){const col=(CATS.find(x=>x[0]===c)||[])[2]||'#1e8a50';
+const I={hayalet:'<rect x="128" y="50" width="44" height="40" rx="8"/><rect x="136" y="30" width="6" height="22"/><rect x="158" y="30" width="6" height="22"/><rect x="146" y="90" width="8" height="24"/>',
+veri:'<rect x="110" y="24" width="80" height="24" rx="5"/><rect x="110" y="54" width="80" height="24" rx="5"/><rect x="110" y="84" width="80" height="24" rx="5"/><circle cx="122" cy="36" r="3" fill="'+col+'"/><circle cx="122" cy="66" r="3" fill="'+col+'"/><circle cx="122" cy="96" r="3" fill="'+col+'"/>',
+karbon:'<circle cx="130" cy="72" r="22"/><circle cx="158" cy="58" r="28"/><circle cx="184" cy="74" r="20"/><rect x="128" y="72" width="58" height="22"/><text x="157" y="86" font-size="15" font-weight="800" text-anchor="middle" fill="'+col+'">CO₂</text>',
+gunluk:'<circle cx="150" cy="58" r="28"/><rect x="138" y="84" width="24" height="8" rx="3"/><rect x="142" y="94" width="16" height="8" rx="3"/>',
+kampus:'<rect x="96" y="46" width="54" height="62" rx="4"/><rect x="156" y="66" width="40" height="42" rx="4"/><circle cx="214" cy="84" r="18"/><rect x="211" y="98" width="6" height="14"/>'};
+return '<svg viewBox="0 0 300 130" aria-hidden="true" focusable="false"><rect width="300" height="130" fill="'+col+'"/><circle cx="262" cy="20" r="34" fill="#fff" opacity=".12"/><circle cx="30" cy="118" r="44" fill="#fff" opacity=".1"/><g fill="#fff" opacity=".92">'+(I[c]||'')+'</g></svg>';}
+function el(t,c,x){const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e;}
+const words=a=>a.b.reduce((n,p)=>n+(typeof p==='string'?p:Array.isArray(p)?(Array.isArray(p[1])?p[1].join(' '):p[1]):'').split(/\s+/).length,0)+a.d.split(/\s+/).length;
+const mins=a=>Math.max(1,Math.round(words(a)/180));
+function content(a){
+  const w=el('div','bcont');w.id='bc-'+a.id;w.hidden=true;
+  a.b.forEach(p=>{
+    if(typeof p==='string')w.appendChild(el('p',null,p));
+    else if(p[0]==='h')w.appendChild(el('h4',null,p[1]));
+    else if(p[0]==='ul'){const u=el('ul');p[1].forEach(x=>u.appendChild(el('li',null,x)));w.appendChild(u);}
+    else if(p[0]==='n')w.appendChild(el('p','bnote',p[1]));
+    else if(p[0]==='src')w.appendChild(el('p','bsrc',p[1]));
+  });
+  return w;
+}
+let cur='';
+function render(){
+  const g=$('bgrid');g.textContent='';
+  const L=ART.filter(a=>!cur||a.c===cur);
+  L.forEach(a=>{
+    const cat=CATS.find(x=>x[0]===a.c);
+    const k=el('article','bcard');
+    const im=el('div','bimg');im.innerHTML=art(a.c);k.appendChild(im);
+    const b=el('div','bbody');b.appendChild(el('span','kt',cat[1]));b.appendChild(el('h3',null,a.t));b.appendChild(el('p','bd',a.d));b.appendChild(el('span','bmeta',mins(a)+' dk okuma'));
+    const btn=el('button','kb p','Makaleyi oku');btn.type='button';btn.setAttribute('aria-expanded','false');btn.setAttribute('aria-controls','bc-'+a.id);
+    const ct=content(a);
+    btn.addEventListener('click',()=>{const o=ct.hidden;ct.hidden=!o;btn.setAttribute('aria-expanded',String(o));btn.textContent=o?'Makaleyi kapat':'Makaleyi oku';k.classList.toggle('open',o);});
+    b.appendChild(btn);b.appendChild(ct);k.appendChild(b);g.appendChild(k);
+  });
+  $('bcount').textContent=(cur?(CATS.find(x=>x[0]===cur)[1]+': '):'Tüm kategoriler: ')+L.length+' makale';
+  Array.prototype.forEach.call($('bchips').children,ch=>ch.setAttribute('aria-pressed',String((ch.dataset.c||'')===cur)));
+}
+[['','Tümü']].concat(CATS.map(c=>[c[0],c[1]])).forEach(c=>{const b=el('button','bchip',c[1]);b.type='button';b.dataset.c=c[0];b.addEventListener('click',()=>{cur=c[0];render();});$('bchips').appendChild(b);});
+window.__blog={ART:ART,CATS:CATS,mins:mins,filter:c=>{cur=c;render();}};
+render();
+})();
+</script>
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const D=120;
+const SEG=[
+{s:0,t:'Merhaba, Görünmez Maliyet’e hoş geldin. Bu bölümde gözle görmediğimiz ama faturada, atmosferde ve kampüste karşımıza çıkan enerjiyi konuşacağız. Bu iki dakikada kısa bir yolculuğa çıkıyoruz: prizden sınıfa, oradan veri merkezlerine. Bir düşün: şu an odanda kaç cihaz prize takılı ve kaçı gerçekten kullanılıyor?'},
+{s:20,t:'Buna hayalet enerji diyoruz: cihaz iş yapmıyorken bile çekilen güç. Bu sitedeki hesaplayıcıda boştaki bir adaptör için sıfır virgül yirmi beş vat, bekleme modundaki bir laptop ya da monitör için beş vat referans alıyoruz. Tek başına küçük görünür; ama cihaz sayısı ve saatler çarpılınca küçük kalmaz. İşte bu yüzden önce görmek, sonra azaltmak gerekiyor.'},
+{s:45,t:'Şimdi bir sınıf hayal et. Ders bitti, ama iki projektör açık kaldı. Yüz elli vatlık referans değerle, günde iki saat gereksiz açık kalma yılda yaklaşık iki yüz on dokuz kilovat saat eder. Kimsenin görmediği bu tüketim hem bütçeye hem karbon emisyonuna yazılır. Üstelik bu sadece iki cihaz; kampüsteki onlarca sınıfı düşün.'},
+{s:70,t:'Görünmez tüketim sadece prizde değil, ekranın ardında da var. Uluslararası Enerji Ajansı, veri merkezlerinin iki bin yirmi dörtte dünya elektriğinin yaklaşık yüzde bir buçuğunu kullandığını belirtiyor. Video izlemek için tek ve kesin bir karbon katsayısı yok; bu yüzden tahminlere temkinli yaklaşmak gerek. Yani ekranda gördüğümüz her şeyin arkasında çalışan bir sunucu ve onu soğutan bir sistem var.'},
+{s:95,t:'İyi haber: çözümler basit. Kullanmadığın adaptörü çek, cihazı bekleme modunda bırakma, çıkarken ışığı kapat, boş sınıfta açık kalan cihazı kampüs haritasından bildir. Odadan çıkarken ışığı söndürmek on saniye sürer, ama alışkanlığa dönüşünce yıl boyu işe yarar.'},
+{s:110,t:'Şimdi sıra sende. Kendi cihazlarını hesaplayıcıya gir ve görünmez maliyeti görünür kıl. Küçük adımlar tek tek sessizdir; birlikte ise duyulur.'}
+];
+const fmt=s=>{s=Math.max(0,Math.min(D,Math.floor(s)));return Math.floor(s/60)+':'+String(s%60).padStart(2,'0');};
+const segAt=x=>{let i=0;SEG.forEach((g,k)=>{if(x>=g.s)i=k;});return i;};
+const synth=window.speechSynthesis,canSpeak=!!(synth&&window.SpeechSynthesisUtterance);
+let t=0,playing=false,cur=-1,timer=null,last=0,ended=false;
+function speak(i){if(!canSpeak||!$('pspeak').checked)return;try{synth.cancel();const u=new SpeechSynthesisUtterance(SEG[i].t);u.lang='tr-TR';const v=(synth.getVoices()||[]).find(x=>/^tr/i.test(x.lang));if(v)u.voice=v;synth.speak(u);}catch(e){}}
+function stopSpeech(){if(canSpeak){try{synth.cancel();}catch(e){}}}
+function ui(){
+  $('ptime').textContent=fmt(t)+' / '+fmt(D);$('pseek').value=String(t);$('pseek').setAttribute('aria-valuetext',fmt(t)+' / '+fmt(D));
+  $('pcap').textContent=SEG[segAt(t)].t;
+  $('pplay').disabled=playing;$('ppause').disabled=!playing;
+  $('pplay').textContent=(!playing&&t>0&&t<D)?'▶ Devam et':(ended?'↻ Tekrar dinle':'▶ Başlat');
+}
+function finish(){playing=false;clearInterval(timer);stopSpeech();ended=true;t=D;$('pcta').hidden=false;ui();}
+function tick(dt){if(!playing)return;t=Math.min(D,t+dt);const i=segAt(t);if(t>=D){finish();return;}if(i!==cur){cur=i;speak(i);}ui();}
+function play(){if(playing)return;if(t>=D||ended){t=0;ended=false;$('pcta').hidden=true;}playing=true;cur=segAt(t);speak(cur);last=performance.now();timer=setInterval(()=>{const n=performance.now();tick((n-last)/1000);last=n;},250);ui();}
+function pause(){if(!playing)return;playing=false;clearInterval(timer);stopSpeech();ui();}
+function seek(x){x=Number(x);if(!isFinite(x))return;t=Math.max(0,Math.min(D,x));cur=segAt(t);if(t<D){ended=false;$('pcta').hidden=true;}if(t>=D){finish();return;}if(playing)speak(cur);ui();}
+$('pplay').addEventListener('click',play);$('ppause').addEventListener('click',pause);
+$('pseek').addEventListener('input',e=>seek(e.target.value));
+$('pspeak').addEventListener('change',()=>{if(!$('pspeak').checked)stopSpeech();else if(playing)speak(cur);});
+const dlg=$('pdlg');
+SEG.forEach(g=>{const p=document.createElement('p');p.className='sg';const b=document.createElement('b');b.textContent=fmt(g.s);p.appendChild(b);p.appendChild(document.createTextNode(' '+g.t));$('pdb').appendChild(p);});
+$('pscript').addEventListener('click',()=>{if(dlg.showModal)dlg.showModal();else dlg.setAttribute('open','');});
+function closeD(){if(dlg.close)dlg.close();else dlg.removeAttribute('open');}
+$('pdx').addEventListener('click',closeD);
+dlg.addEventListener('click',e=>{if(e.target===dlg)closeD();});
+$('pdgo').addEventListener('click',closeD);
+if(!canSpeak){$('pspeak').checked=false;$('pspeak').disabled=true;$('pnote').textContent='Bu tarayıcıda sesli okuma desteklenmiyor; podcast alt yazı modunda çalışır.';}
+window.__podcast={SEG:SEG,D:D,fmt:fmt,segAt:segAt,play:play,pause:pause,seek:seek,tick:tick,state:()=>({t:t,playing:playing,ended:ended})};
+ui();
+})();
+</script>
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const CATS=[['kolay','Kolay (ek maliyet yok)','#1e8a50'],['dusuk','Düşük maliyetli','#2f7fd1'],['uygulanabilir','Uygulanabilir (planlama gerektirir)','#0f5a3c']];
+const G=[
+{id:'g1',c:'kolay',ic:'plug',t:'Boştaki adaptör ve şarj aletlerini prizden çek',d:'Telefona bağlı olmayan şarj aleti de prizdeyken çok az da olsa güç çeker.',
+ s:['Odandaki tüm adaptör ve şarj aletlerini say.','Kullanmadığını prizden çek, kullandıklarını tek bir yerde topla.','Şarj bitince çıkarma alışkanlığı edin: akşam şarja tak, sabah adaptörü de çek.'],m:['Gerekmez'],cost:'0 TL (ek maliyet yok)',sv:'Referans değer 0,25 W ile adaptör başına yılda yaklaşık 2,2 kWh; 10 adaptör yaklaşık 21,9 kWh (4,5 TL/kWh ile yaklaşık 98,55 TL).',lv:'Düşük',n:'Gerçek güç, adaptörün türüne göre değişir.'},
+{id:'g2',c:'kolay',ic:'laptop',t:'Bilgisayar ve monitörü bekleme yerine tamamen kapat',d:'Bekleme modu kapalı görünse de enerji harcamaya devam eder.',
+ s:['Çalışma bitince uyku yerine “Kapat”ı seç.','Monitörü kendi düğmesinden kapat.','Uzun süre kullanmayacaksan fişi çek ya da çoklu prizi kapat.'],m:['Gerekmez'],cost:'0 TL (ek maliyet yok)',sv:'Referans 5 W bekleme gücü ve günde 12 saat bekleme varsayımıyla cihaz başına yaklaşık 21,9 kWh/yıl (yaklaşık 98,55 TL).',lv:'Orta',n:'Otomatik güncelleme veya indirme sırasında bilgisayarı kapatma.'},
+{id:'g3',c:'kolay',ic:'bulb',t:'İşığı kapat, gün ışığını kullan',d:'Boş odada yanan ışık, en kolay engellenen görünmez kayıptır.',
+ s:['Odadan çıkarken ışığı kapat.','Gündüz perdeleri aç, çalışma masanı pencere yanına taşı.','Ortak alanlar için “son çıkan kapatır” kuralını ev arkadaşlarınla belirle.'],m:['Gerekmez'],cost:'0 TL (ek maliyet yok)',sv:'Örnek: 10 W’lık bir ışık günde 3 saat gereksiz açık kalıyorsa yılda yaklaşık 10,95 kWh. Gerçek değer ışığın gücüne ve süreye bağlıdır.',lv:'Düşük',n:''},
+{id:'g4',c:'dusuk',ic:'strip',t:'Anahtarlı çoklu priz kullan',d:'Tek bir anahtarla birden fazla cihazın bekleme kaybını kesersin.',
+ s:['Birlikte duran cihazları (monitör, laptop şarjı, adaptör, hoparlör) tek çoklu prize tak.','Yatmadan veya evden çıkarken anahtarı kapat.','Isıtıcı gibi yüksek güçlü cihazları çoklu prize takma.'],m:['Anahtarlı, aşırı akım korumalı çoklu priz (1 adet)'],cost:'Yaklaşık 200–600 TL (tahmini fiyat)',sv:'1. ve 2. önerilerdeki kayıpları tek anahtarla keser. Örnek: 5 adaptör + 2 bekleme cihazı sürekli kapatılırsa yaklaşık 54,8 kWh/yıl (yaklaşık 246 TL).',lv:'Orta',n:'Prizin etiketindeki güç sınırını aşma; çoklu prizleri birbirine ekleme.'},
+{id:'g5',c:'dusuk',ic:'led',t:'Eski ampulleri LED ile değiştir',d:'Aynı ışık için LED ampul, eski akkor ampulden çok daha az güç kullanır.',
+ s:['Kullandığın lamba ve ampul tiplerini kontrol et.','Akkor ya da halojen ampul varsa duya uygun LED ampul al.','Yalnızca kendi lambandaki ampulleri değiştir; tavan armatürlerine izinsiz dokunma.'],m:['Duya uygun LED ampul (adet)'],cost:'Yaklaşık 50–150 TL/adet (tahmini fiyat)',sv:'Varsayım: 60 W’lık eski ampul yerine benzer aydınlıkta 9 W LED, günde 4 saat: yılda yaklaşık 74,5 kWh (yaklaşık 335 TL). Zaten LED kullanıyorsan fark çok daha az olur.',lv:'Orta',n:'Ampul gücü ve ışık verimi ürüne göre değişir.'},
+{id:'g6',c:'dusuk',ic:'window',t:'Pencere ve kapı aralıklarını sızdırmazlık bandıyla kapat',d:'Sıcak havanın dışarı kaçmasını azaltarak ısıtma ihtiyacını düşürür.',
+ s:['Hava kaçağını elinle veya hafif bir şeritle pencere/kapı kenarında kontrol et.','Yüzeyi temizle ve kurula.','Bandı ölçüp kes ve yapıştır; pencerenin kapanıp açıldığını kontrol et.','Kiracıysan ev sahibine haber ver; odayı yine de kısa süreli havalandır.'],m:['Kendinden yapışkanlı sızdırmazlık/conta bandı','Makas ve temizlik bezi'],cost:'Yaklaşık 100–300 TL, bir oda için (tahmini fiyat)',sv:'İsıtma enerjisini azaltması beklenir; miktar pencerelerin ve evin durumuna göre değişir. Bu rehber ölçülmüş bir sayı vermez.',lv:'Orta (konuta bağlı)',n:'Odanı tamamen havasız bırakma; nem ve küf için kısa havalandırma yap.'},
+{id:'g7',c:'uygulanabilir',ic:'washer',t:'Çamaşır makinesini dolu ve düşük sıcaklıkta çalıştır',d:'Su ısıtmak enerji ister; daha az yıkama ve daha düşük sıcaklık tasarruf sağlar.',
+ s:['Makineyi doldur ama aşırı yüklemeden.','Kirliliğe göre mümkünse düşük sıcaklıklı program seç.','Ev arkadaşlarınla ortak yıkama günü belirle.'],m:['Gerekmez'],cost:'0 TL (ek maliyet yok)',sv:'Su ısıtma enerjisini azaltması beklenir; miktar makineye ve programa göre değişir, ölçülmüş bir değer verilmedi.',lv:'Orta',n:'Hijyen gerektiren çamaşırlar için ürün etiketindeki sıcaklık talimatına uy.'},
+{id:'g8',c:'uygulanabilir',ic:'fridge',t:'Buzdolabını verimli kullan',d:'Buzdolabı sürekli çalışır; küçük alışkanlıklar kompresörün yükünü azaltır.',
+ s:['Kapı contasını kontrol et: kapıya kağıt sıkıştırıp kolay çekiliyorsa conta zayıf olabilir.','Sıcak yemekleri soğutup koy.','Arkasındaki ve yanındaki havalandırma boşluğunu kapatma.','Buzluk buzlanmışsa çözdür ve kapıyı gereksiz açık tutma.'],m:['Gerekmez (conta değişecekse yedek conta)'],cost:'0 TL (conta değişimi gerekirse ek maliyet, tahmin verilmedi)',sv:'Kompresörün çalışma süresini azaltması beklenir; miktar cihaza göre değişir, ölçülmüş değer verilmedi.',lv:'Düşük–orta',n:'Ev sahibine ait cihazda tamir için önce ev sahibine haber ver.'},
+{id:'g9',c:'uygulanabilir',ic:'heat',t:'Isıtma düzenini ortak kararıyla ayarla',d:'Soğuk iklimlerde ısıtma, konut enerji kullanımının önemli bölümünü oluşturabilir.',
+ s:['Ev arkadaşlarınla veya yurt yönetimiyle makul bir oda sıcaklığı belirle.','Dışarıdayken ve geceleri mümkünse ısıtmayı düşür.','Radyatörün önünü eşya ve perdeyle kapatma.','Akşam kalın perdeleri kapat.','Ayar yurt yönetimine aitse aşırı ısınma veya arızayı bildir.'],m:['Gerekmez (kalın perde yoksa isteğe bağlı ek maliyet, tahmin verilmedi)'],cost:'0 TL (ek maliyet yok)',sv:'Oda sıcaklığını gereksiz yükseltmemek ısıtma enerjisini azaltır; miktar evin yalıtımına ve sisteme bağlıdır, ölçülmüş değer verilmedi.',lv:'Yüksek potansiyel (konuta bağlı)',n:'Sağlık nedeniyle ısınmaya ihtiyaç duyan kişilerin konforunu gözet.'},
+{id:'g10',c:'uygulanabilir',ic:'map',t:'Ortak alandaki israfı bildir ve öneri paylaş',d:'Yurt ve sınıflardaki ortak alanlar çok kişi tarafından kullanıldığı için bir israf çok kişiyi etkiler.',
+ s:['Sürekli açık kalan ışık, cihaz veya projektörü fark et.','Sayfadaki Kampüs Çözüm Haritası’ndan binayı seçip bildir.','Varsa çözüm önerini aynı bildirime ekle.'],m:['Gerekmez'],cost:'0 TL (ek maliyet yok)',sv:'Ortak alanlarda sayısal etki ölçülmedi; çok kullanıcılı yerlerde küçük düzeltmeler bile toplamda büyüklük kazanabilir.',lv:'Değişken',n:'Bildirimler topluluk bildirimidir ve yetkili tarafından doğrulanana kadar doğrulanmamış sayılır.'}
+];
+function art(ic,col){
+const I={plug:'<rect x="128" y="50" width="44" height="40" rx="8"/><rect x="136" y="30" width="6" height="22"/><rect x="158" y="30" width="6" height="22"/><rect x="146" y="90" width="8" height="24"/>',
+laptop:'<rect x="104" y="34" width="92" height="56" rx="6"/><rect x="88" y="94" width="124" height="10" rx="5"/>',
+bulb:'<circle cx="150" cy="58" r="28"/><rect x="138" y="84" width="24" height="8" rx="3"/><rect x="142" y="94" width="16" height="8" rx="3"/>',
+strip:'<rect x="70" y="50" width="160" height="40" rx="10"/><circle cx="110" cy="70" r="8" fill="'+col+'"/><circle cx="150" cy="70" r="8" fill="'+col+'"/><circle cx="190" cy="70" r="8" fill="'+col+'"/>',
+led:'<circle cx="150" cy="54" r="28"/><rect x="138" y="80" width="24" height="8" rx="3"/><rect x="142" y="90" width="16" height="8" rx="3"/><text x="150" y="60" font-size="16" font-weight="800" text-anchor="middle" fill="'+col+'">LED</text>',
+window:'<rect x="106" y="26" width="88" height="82" rx="4"/><path d="M150 26v82M106 67h88" stroke="'+col+'" stroke-width="6"/>',
+washer:'<rect x="108" y="24" width="84" height="88" rx="8"/><circle cx="150" cy="72" r="26" fill="'+col+'"/><circle cx="150" cy="72" r="16" fill="#fff"/>',
+fridge:'<rect x="118" y="20" width="64" height="96" rx="8"/><path d="M118 54h64" stroke="'+col+'" stroke-width="5"/><rect x="168" y="34" width="4" height="12" fill="'+col+'"/><rect x="168" y="66" width="4" height="22" fill="'+col+'"/>',
+heat:'<rect x="96" y="40" width="108" height="56" rx="6"/><path d="M116 48v40M136 48v40M156 48v40M176 48v40" stroke="'+col+'" stroke-width="7"/>',
+map:'<path d="M150 24a28 28 0 0 0-28 28c0 24 28 56 28 56s28-32 28-56a28 28 0 0 0-28-28z"/><circle cx="150" cy="52" r="11" fill="'+col+'"/>'};
+return '<svg viewBox="0 0 300 130" aria-hidden="true" focusable="false"><rect width="300" height="130" fill="'+col+'"/><circle cx="262" cy="20" r="34" fill="#fff" opacity=".12"/><circle cx="30" cy="118" r="44" fill="#fff" opacity=".1"/><g fill="#fff" opacity=".92">'+(I[ic]||'')+'</g></svg>';}
+function el(t,c,x){const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e;}
+function fact(l,v){const f=el('div','gf');f.appendChild(el('b',null,l));f.appendChild(document.createTextNode(v));return f;}
+let cur='';
+function render(){
+  const g=$('ggrid');g.textContent='';
+  const L=G.filter(a=>!cur||a.c===cur);
+  L.forEach(a=>{
+    const cat=CATS.find(x=>x[0]===a.c);
+    const k=el('article','bcard');
+    const im=el('div','bimg');im.innerHTML=art(a.ic,cat[2]);k.appendChild(im);
+    const b=el('div','bbody');b.appendChild(el('span','kt',cat[1]));b.appendChild(el('h3',null,a.t));b.appendChild(el('p','bd',a.d));
+    const f=el('div','gfacts');f.appendChild(fact('TAHMİNİ MALİYET',a.cost));f.appendChild(fact('BEKLENEN ENERJİ TASARRUFU ('+a.lv.toUpperCase()+')',a.sv));b.appendChild(f);
+    const d=el('details','gd');d.appendChild(el('summary',null,'Uygulama adımları ve gerekli malzemeler'));
+    d.appendChild(el('h5',null,'Uygulama adımları'));const ol=el('ol');a.s.forEach(x=>ol.appendChild(el('li',null,x)));d.appendChild(ol);
+    d.appendChild(el('h5',null,'Gerekli malzemeler'));const ul=el('ul');a.m.forEach(x=>ul.appendChild(el('li',null,x)));d.appendChild(ul);
+    if(a.n)d.appendChild(el('p','gn','Not: '+a.n));
+    b.appendChild(d);k.appendChild(b);g.appendChild(k);
+  });
+  $('gcount').textContent=(cur?(CATS.find(x=>x[0]===cur)[1]+': '):'Tüm kategoriler: ')+L.length+' öneri';
+  Array.prototype.forEach.call($('gchips').children,ch=>ch.setAttribute('aria-pressed',String((ch.dataset.c||'')===cur)));
+}
+[['','Tümü']].concat(CATS.map(c=>[c[0],c[1]])).forEach(c=>{const b=el('button','bchip',c[1]);b.type='button';b.dataset.c=c[0];b.addEventListener('click',()=>{cur=c[0];render();});$('gchips').appendChild(b);});
+window.__guide={G:G,CATS:CATS,filter:c=>{cur=c;render();}};
+render();
+})();
+</script>
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const TASKS=[{id:'t1',t:'Boştaki adaptör ve şarj aletlerini prizden çektim',p:10},{id:'t2',t:'Bilgisayar ve monitörü bekleme yerine tamamen kapattım',p:10},{id:'t3',t:'Odadan çıkarken ışıkları kapattım',p:5},{id:'t4',t:'Anahtarlı çoklu prizi kapattım veya cihazları fişten çektim',p:10},{id:'t5',t:'Tasarruf Rehberi’nden bir öneriyi uyguladım',p:10},{id:'t6',t:'Ortak alandaki bir israfı bildirdim veya çözüm önerdim',p:15}];
+const MAXD=TASKS.reduce((s,x)=>s+x.p,0);
+const PT={};TASKS.forEach(x=>PT[x.id]=x.p);
+const PROF=[{k:'hero',ic:'🦸',n:'Yeşil Kahraman',min:0.7,d:'Hedeflerine göre çok iyi gidiyorsun. Alışkanlıklarını arkadaşlarınla paylaş.'},{k:'aware',ic:'🌿',n:'Bilinçli Kullanıcı',min:0.35,d:'İyi bir yoldasın. Atladığın görevlere bak, birkaç tanesini daha alışkanlığa çevir.'},{k:'ghost',ic:'👻',n:'Hayalet Yük Riski',min:0,d:'Görünmez tüketim henüz farkında değil. Adaptör ve bekleme modu görevleriyle başla.'}];
+const CH=[{id:'c1',t:'Hayalet Avcısı',d:'Bu hafta 5 farklı gün “adaptör” görevini tamamla.',goal:5,b:30},{id:'c2',t:'Tam Kapatma',d:'Bu hafta 5 farklı gün “bilgisayar ve monitörü kapat” görevini tamamla.',goal:5,b:30},{id:'c3',t:'200 Puan Haftası',d:'Bu hafta görevlerden 200 puan topla (bonus hariç).',goal:200,b:40},{id:'c4',t:'İstikrar',d:'3 gün üst üste en az 4 görev tamamla.',goal:3,b:30}];
+const BAD=[{id:'b1',ic:'🌱',n:'İlk Adım',d:'İlk görevini tamamla.'},{id:'b2',ic:'👻',n:'Hayalet Avcısı',d:'Adaptör görevini toplam 7 farklı günde tamamla.'},{id:'b3',ic:'⭐',n:'Tam Gün',d:'Bir günde 6 görevin tamamını yap.'},{id:'b4',ic:'🔥',n:'3 Gün Seri',d:'3 gün üst üste en az 1 görev yap.'},{id:'b5',ic:'🎯',n:'Hedef Avcısı',d:'Haftalık puan hedefine ulaş.'},{id:'b6',ic:'🏆',n:'Meydan Okuyucu',d:'Bir haftalık meydan okumayı tamamla.'}];
+const LBD=[['Örnek Fakülte A',1280,20],['Örnek Fakülte B',1950,38],['Örnek Fakülte C',880,12],['Örnek Fakülte D',2100,60],['Örnek Fakülte E',300,4]];
+const MINP=5,DG=200,LK='ge_game_v1';
+let NOW=()=>new Date();
+const p2=n=>String(n).padStart(2,'0');
+const ymd=d=>d.getFullYear()+'-'+p2(d.getMonth()+1)+'-'+p2(d.getDate());
+const dn=k=>{const a=k.split('-').map(Number);return Math.round(Date.UTC(a[0],a[1]-1,a[2])/864e5);};
+function weekDays(now){const m=new Date(now.getFullYear(),now.getMonth(),now.getDate()-((now.getDay()+6)%7));return Array.from({length:7},(_,i)=>new Date(m.getFullYear(),m.getMonth(),m.getDate()+i));}
+function fresh(){return{goal:DG,days:{},badges:{},chDone:{}};}
+function clean(v){const s=fresh();if(!v||typeof v!=='object')return s;
+  if(Number.isInteger(v.goal)&&v.goal>=10&&v.goal<=550)s.goal=v.goal;
+  if(v.days&&typeof v.days==='object')Object.keys(v.days).forEach(k=>{if(/^\d{4}-\d{2}-\d{2}$/.test(k)&&Array.isArray(v.days[k])){const a=Array.from(new Set(v.days[k].filter(x=>PT[x])));if(a.length)s.days[k]=a;}});
+  if(v.badges&&typeof v.badges==='object')BAD.forEach(b=>{if(typeof v.badges[b.id]==='string')s.badges[b.id]=v.badges[b.id];});
+  if(v.chDone&&typeof v.chDone==='object')Object.keys(v.chDone).forEach(k=>{if(/^c[1-4]@\d{4}-\d{2}-\d{2}$/.test(k))s.chDone[k]=true;});
+  return s;}
+let S=fresh();
+function load(){try{S=clean(JSON.parse(localStorage.getItem(LK)));}catch(e){S=fresh();}}
+function save(){try{localStorage.setItem(LK,JSON.stringify(S));}catch(e){}}
+function maxRun(nums){nums=Array.from(new Set(nums)).sort((a,b)=>a-b);let best=0,run=0,prev=null;nums.forEach(n=>{run=(prev!==null&&n===prev+1)?run+1:1;prev=n;if(run>best)best=run;});return best;}
+function stats(st,now){
+  const wd=weekDays(now).map(ymd),tk=ymd(now),wk=wd[0];
+  const per=wd.map(k=>{const ids=st.days[k]||[];return{k:k,ids:ids,n:ids.length,pts:ids.reduce((s,i)=>s+PT[i],0)};});
+  const taskPts=per.reduce((s,x)=>s+x.pts,0),el=wd.indexOf(tk)+1,ratio=taskPts/(el*MAXD);
+  const prof=taskPts===0?PROF[2]:(PROF.find(p=>ratio>=p.min)||PROF[2]);
+  const chs=CH.map(c=>{let pr=0;
+    if(c.id==='c1')pr=per.filter(x=>x.ids.includes('t1')).length;
+    else if(c.id==='c2')pr=per.filter(x=>x.ids.includes('t2')).length;
+    else if(c.id==='c3')pr=taskPts;
+    else pr=maxRun(per.map((x,i)=>x.n>=4?i:-5).filter(i=>i>=0));
+    pr=Math.min(pr,c.goal);return Object.assign({},c,{prog:pr,done:pr>=c.goal});});
+  const bonus=chs.reduce((s,c)=>s+(c.done?c.b:0),0),total=taskPts+bonus;
+  const keys=Object.keys(st.days);const t1d=keys.filter(k=>st.days[k].includes('t1')).length;
+  const earned={b1:keys.length>0,b2:t1d>=7,b3:keys.some(k=>st.days[k].length===TASKS.length),b4:maxRun(keys.map(dn))>=3,b5:st.goal>0&&total>=st.goal,b6:chs.some(c=>c.done)||Object.keys(st.chDone).length>0};
+  return{wd:wd,wk:wk,per:per,taskPts:taskPts,bonus:bonus,total:total,ratio:ratio,prof:prof,chs:chs,earned:earned,today:st.days[tk]||[]};
+}
+function settle(){const now=NOW(),r=stats(S,now);let ch=false;
+  BAD.forEach(b=>{if(r.earned[b.id]&&!S.badges[b.id]){S.badges[b.id]=ymd(now);ch=true;}});
+  r.chs.forEach(c=>{if(c.done){const k=c.id+'@'+r.wk;if(!S.chDone[k]){S.chDone[k]=true;ch=true;}}});
+  if(ch)save();return r;}
+function el(t,c,x){const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e;}
+const DAYS=['Pzt','Sal','Çar','Per','Cum','Cmt','Paz'];
+function render(){
+  const r=settle(),now=NOW(),tk=ymd(now);
+  $('ogs').value=String(S.goal);$('ogn').value=String(S.goal);
+  const gp=Math.min(100,Math.round(r.total/S.goal*100));$('ogf').style.width=gp+'%';$('ogb').setAttribute('aria-valuenow',String(gp));
+  $('ogt').textContent=r.total+' / '+S.goal+' puan (%'+gp+')'+(r.total>=S.goal?' – Hedefe ulaştın!':'')+' · görev '+r.taskPts+' + meydan okuma bonusu '+r.bonus;
+  $('opr').textContent='';const pn=el('div',null);pn.appendChild(el('b',null,r.prof.ic+' '+r.prof.n));pn.appendChild(el('div',null,r.prof.d));$('opr').appendChild(pn);
+  $('opr').appendChild(el('p','note','Haftanın başından bugüne kadar: '+r.taskPts+' / '+((r.wd.indexOf(tk)+1)*MAXD)+' görev puanı (%'+Math.round(r.ratio*100)+')'));
+  $('opf').textContent='';PROF.forEach(p=>{const d=el('div',p.k===r.prof.k?'on':'');d.appendChild(el('span',null,p.ic));d.appendChild(document.createTextNode(p.n));$('opf').appendChild(d);});
+  $('otk').textContent='';
+  TASKS.forEach(x=>{const li=el('li');const lb=el('label',r.today.includes(x.id)?'done':'');const cb=el('input');cb.type='checkbox';cb.checked=r.today.includes(x.id);cb.addEventListener('change',()=>toggle(x.id));lb.appendChild(cb);lb.appendChild(el('span',null,x.t));lb.appendChild(el('em',null,'+'+x.p));li.appendChild(lb);$('otk').appendChild(li);});
+  const tn=r.today.length,tp=r.today.reduce((s,i)=>s+PT[i],0);$('otf').style.width=(tn/TASKS.length*100)+'%';$('otb').setAttribute('aria-valuenow',String(tn));
+  $('ott').textContent='Bugün '+tn+' / '+TASKS.length+' görev tamamlandı ('+tp+' puan)';
+  $('owk').textContent='';r.per.forEach((x,i)=>{const d=el('div',x.k===tk?'today':'');d.appendChild(document.createTextNode(DAYS[i]));d.appendChild(el('b',null,x.n+'/'+TASKS.length));$('owk').appendChild(d);});
+  $('och').textContent='';r.chs.forEach(c=>{const d=el('div','ch'+(c.done?' done':''));d.appendChild(el('b',null,(c.done?'✓ ':'')+c.t+' (+'+c.b+' puan)'));d.appendChild(el('div',null,c.d));d.appendChild(el('small',null,c.prog+' / '+c.goal));const b=el('div','pgb');const f=el('i');f.style.width=(c.prog/c.goal*100)+'%';b.appendChild(f);d.appendChild(b);$('och').appendChild(d);});
+  $('obd').textContent='';BAD.forEach(b=>{const on=!!S.badges[b.id];const d=el('div',on?'on':'');d.setAttribute('title',b.d);d.appendChild(el('span',null,b.ic));d.appendChild(el('b',null,b.n));d.appendChild(el('div',null,on?'Kazanıldı':b.d));$('obd').appendChild(d);});
+}
+function toggle(id){const k=ymd(NOW()),a=(S.days[k]||[]).slice(),i=a.indexOf(id);if(i>=0)a.splice(i,1);else a.push(id);if(a.length)S.days[k]=a;else delete S.days[k];save();render();}
+function setGoal(raw){const er=$('ogerr'),inp=$('ogn');er.textContent='';inp.removeAttribute('aria-invalid');
+  const s=String(raw==null?'':raw).trim();let m=null;
+  if(s==='')m='Hedef boş bırakılamaz.';else{const n=Number(s);if(!isFinite(n))m='Geçerli bir sayı gir.';else if(n<=0)m=n===0?'Hedef sıfır olamaz.':'Hedef negatif olamaz.';else if(!Number.isInteger(n))m='Tam sayı gir.';else if(n<10||n>550)m='Hedef 10 ile 550 arasında olmalı.';else{S.goal=n;save();render();return true;}}
+  er.textContent=m;inp.setAttribute('aria-invalid','true');return false;}
+function lb(){const L=LBD.map(x=>({n:x[0],p:x[1],c:x[2],s:x[1]/x[2],ok:x[2]>=MINP})).sort((a,b)=>(b.ok-a.ok)||(b.s-a.s));return L;}
+function drawLb(){const tb=$('olb');tb.textContent='';let rk=0;lb().forEach(x=>{const tr=el('tr',x.ok?(rk===0?'top':''):'out');if(x.ok)rk++;[x.ok?String(rk):'–',x.n+(rk===1&&x.ok?' 🏅':''),String(x.p),String(x.c),x.ok?x.s.toFixed(1).replace('.',','):'Yetersiz katılım'].forEach(t=>tr.appendChild(el('td',null,t)));tb.appendChild(tr);});}
+function drawCrit(){const c=$('ocr');c.textContent='';
+  function tbl(h,rows){const t=el('table');const tr=el('tr');h.forEach(x=>tr.appendChild(el('th',null,x)));t.appendChild(tr);rows.forEach(r=>{const q=el('tr');r.forEach(x=>q.appendChild(el('td',null,x)));t.appendChild(q);});c.appendChild(t);}
+  c.appendChild(el('h4',null,'1. Günlük görevler (günde en fazla '+MAXD+' puan)'));tbl(['Görev','Puan'],TASKS.map(x=>[x.t,String(x.p)]));
+  c.appendChild(el('h4',null,'2. Haftalık meydan okumalar (haftada bir kez bonus)'));tbl(['Meydan okuma','Koşul','Bonus'],CH.map(x=>[x.t,x.d,'+'+x.b]));
+  c.appendChild(el('h4',null,'3. Ekolojik profil'));tbl(['Profil','Koşul'],[[PROF[0].n,'Haftanın başından bugüne kadar alınabilecek görev puanının %70 veya fazlası'],[PROF[1].n,'%35 ile %69 arası'],[PROF[2].n,'%35’in altı ya da henüz hiç görev yok (bonus puanlar profile sayılmaz)']]);
+  c.appendChild(el('h4',null,'4. Rozetler'));tbl(['Rozet','Koşul'],BAD.map(x=>[x.n,x.d]));
+  c.appendChild(el('h4',null,'5. Hedef ve sıralama'));c.appendChild(el('p',null,'Hedef ilerlemesi = bu haftaki görev puanları + kazanılan meydan okuma bonusları. Hafta Pazartesi başlar. Fakülte puanı = toplam puan ÷ katılımcı sayısı; en az '+MINP+' katılımcı gerekir (demo veri).'));}
+$('ogn').addEventListener('input',e=>setGoal(e.target.validity&&e.target.validity.badInput?'x':e.target.value));
+$('ogs').addEventListener('input',e=>setGoal(e.target.value));
+$('orst').addEventListener('click',()=>{if(confirm('Tüm ilerlemen silinsin mi?')){S=fresh();save();render();}});
+window.__game={TASKS:TASKS,CH:CH,BAD:BAD,PROF:PROF,MAXD:MAXD,stats:stats,fresh:fresh,clean:clean,weekDays:weekDays,ymd:ymd,toggle:toggle,setGoal:setGoal,lb:lb,state:()=>S,setNow:f=>{NOW=f;},reset:()=>{S=fresh();},render:render};
+load();drawLb();drawCrit();render();
+})();
+</script>
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const ST={ok:['Tamamlandı','ok',1],mid:['Devam ediyor','mid',0.5],no:['Başlamadı','no',0],unk:['Bilgi yok','unk',null]};
+const PH=[
+{id:'h',t:'Hazırlık',d:'Sitenin ve içeriğin hazırlanması',a:[
+['Site tasarımı ve ana sayfa','ok','Yeşil temalı, mobil uyumlu ana sayfa hazır.'],
+['Hayalet Enerji Hesaplayıcısı ve grafikler','ok','Hesaplayıcı ve dört grafik çalışıyor.'],
+['Kampüs Çözüm Haritası','mid','Şematik demo harita; gerçek koordinatlar doğrulanamadı.'],
+['Blog ve Düşük Bütçeli Tasarruf Rehberi','ok','6 makale ve 10 öneri hazır; fiyatlar tahminidir.'],
+['Podcast','mid','Demo oynatıcı; gerçek ses kaydı yok.'],
+['Oyunlaştırma sistemi','mid','Demo; ilerleme yalnızca tarayıcıda saklanır, hesap yok.'],
+['Haberler ve kaynakça sayfaları','no','Henüz yapılmadı.']]},
+{id:'s',t:'Saha Uygulaması',d:'Kampüs ve yurtlarda uygulama',a:[
+['Kampüs/yurt enerji israfı gözlemi','unk','Bu sayfaya girilmiş bir kayıt yok.'],
+['Öğrenci farkındalık etkinliği','unk','Bu sayfaya girilmiş bir kayıt yok.'],
+['Haritadan gelen bildirimlerin toplanması','unk','Alt yapı var; gerçek toplanan bildirim sayısı bu sayfadan doğrulanamaz.']]},
+{id:'g',t:'Geri Bildirim',d:'Öğrenci görüşlerinin alınması',a:[
+['Öğrenci anketinin hazırlanması','ok','Anket aşağıda, doğrulamalı biçimde hazır.'],
+['Anket cevaplarının toplanması','no','Veri tabanı kurulmadığı için cevaplar kaydedilmiyor.'],
+['Sonuçların analizi ve raporlanması','no','Toplanmış veri olmadığından başlanmadı.']]}
+];
+function el(t,c,x){const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e;}
+function pct(a){const k=a.filter(x=>ST[x[1]][2]!==null);if(!k.length)return null;return Math.round(k.reduce((s,x)=>s+ST[x[1]][2],0)/k.length*100);}
+function drawPanel(){
+  const g=$('evg');g.textContent='';
+  PH.forEach(p=>{
+    const c=el('div','card');c.appendChild(el('h3',null,p.t));c.appendChild(el('small',null,p.d));
+    const v=pct(p.a),n=p.a.filter(x=>x[1]==='ok').length;
+    c.appendChild(el('div','evp',v===null?'Tamamlanma: hesaplanamadı (durum bilgisi yok)':'Tamamlanma: %'+v+' ('+n+' / '+p.a.length+' faaliyet tamamlandı)'));
+    const b=el('div','pgb');b.setAttribute('role','progressbar');b.setAttribute('aria-label',p.t+' tamamlanma durumu');b.setAttribute('aria-valuemin','0');b.setAttribute('aria-valuemax','100');b.setAttribute('aria-valuenow',String(v===null?0:v));
+    const f=el('i');f.style.width=(v===null?0:v)+'%';b.appendChild(f);c.appendChild(b);
+    const ul=el('ul','evl');p.a.forEach(x=>{const li=el('li');li.appendChild(el('span','stc '+ST[x[1]][1],ST[x[1]][0]));li.appendChild(document.createTextNode(x[0]));li.appendChild(el('small',null,x[2]));ul.appendChild(li);});
+    c.appendChild(ul);g.appendChild(c);
+  });
+}
+const L5=['Hiç katılmıyorum','Katılmıyorum','Kararsızım','Katılıyorum','Tamamen katılıyorum'];
+const MODS=['Hayalet Enerji Hesaplayıcısı ve grafikler','Kampüs Çözüm Haritası','Blog','Podcast','Tasarruf Rehberi','Tasarruf Oyunu'];
+const Q=[
+{k:'house',t:'1. Nerede kalıyorsun?',type:'radio',req:1,o:['Yurt','Öğrenci evi','Ailemle birlikte','Diğer']},
+{k:'aw',t:'2. Enerji israfının (bekleme modu, açık kalan cihazlar gibi) maliyetini ve çevresel etkisini biliyorum.',type:'radio',req:1,o:L5,n:1},
+{k:'hab',t:'3. Odadan çıkarken ışık ve cihazları kapatırım.',type:'select',req:1,o:['Hiçbir zaman','Nadiren','Bazen','Çoğunlukla','Her zaman']},
+{k:'help',t:'4. Görünmez Enerji sitesi, enerji israfını görmemde işime yaradı.',type:'radio',req:1,o:L5,n:1},
+{k:'mods',t:'5. En yararlı bulduğun bölümler (istersen işaretle)',type:'check',o:MODS},
+{k:'impl',t:'6. Kampüste ve yurtta enerji tasarrufu önerilerinin uygulanabilir olduğunu düşünüyorum.',type:'radio',req:1,o:L5,n:1},
+{k:'sug',t:'7. Uygulanabilir bir tasarruf önerin var mı? (isteğe bağlı, 10–300 karakter)',type:'text'},
+{k:'opin',t:'Proje hakkındaki görüşün (isteğe bağlı, 10–300 karakter)',type:'text'}
+];
+function vt(s){s=String(s==null?'':s).replace(/\s+/g,' ').trim();if(!s)return[null,''];
+  if(s.length<10)return['En az 10 karakter yaz ya da boş bırak.'];if(s.length>300)return['En fazla 300 karakter olabilir.'];
+  if(/[<>]/.test(s))return['"<" ve ">" kullanılamaz.'];if(/(https?:|www\.|@)/i.test(s))return['Bağlantı veya e-posta yazma.'];
+  if(/\d{7,}/.test(s))return['Telefon, kimlik gibi uzun sayılar yazma.'];if(/(.)\1{7,}/.test(s))return['Anlamsız tekrar içeriyor.'];return[null,s];}
+function validate(v){
+  const er={},d={};
+  Q.forEach(q=>{const x=v[q.k];
+    if(q.type==='radio'||q.type==='select'){
+      if(x==null||x===''){if(q.req)er[q.k]='Bu soruyu cevaplamak zorunlu.';return;}
+      if(!q.o.includes(x)){er[q.k]='Geçerli bir seçenek seç.';return;}d[q.k]=x;}
+    else if(q.type==='check'){const a=Array.isArray(x)?x:[];if(a.some(i=>!q.o.includes(i))){er[q.k]='Geçersiz seçim.';return;}d[q.k]=Array.from(new Set(a));}
+    else{const[e,s]=vt(x);if(e)er[q.k]=e;else d[q.k]=s;}
+  });
+  return{errors:er,data:d,ok:Object.keys(er).length===0};
+}
+function summary(d){
+  const sc=(k,o)=>d[k]!=null?d[k]+(o===L5?' ('+(L5.indexOf(d[k])+1)+'/5)':''):'–';
+  return ['Öğrenci anketi – Görünmez Enerji (kaydedilmemiş özet)','Konaklama: '+sc('house'),'Enerji israfı farkındalığı: '+sc('aw',L5),'Odadan çıkarken kapatma sıklığı: '+sc('hab'),'Site işime yaradı: '+sc('help',L5),'Yararlı bölümler: '+((d.mods||[]).join(', ')||'–'),'Önerilerin uygulanabilirliği: '+sc('impl',L5),'Tasarruf önerisi: '+(d.sug||'–'),'Proje görüşü: '+(d.opin||'–')].join('\n');}
+function build(){
+  const c=$('sq');c.textContent='';
+  Q.forEach(q=>{
+    const f=el('fieldset','sq');f.id='f-'+q.k;f.appendChild(el('legend',null,q.t+(q.req?' *':'')));
+    if(q.type==='radio'||q.type==='check'){q.o.forEach((o,i)=>{const l=el('label');const i2=el('input');i2.type=q.type==='radio'?'radio':'checkbox';i2.name=q.k;i2.value=o;l.appendChild(i2);l.appendChild(document.createTextNode(q.n?(i+1)+' – '+o:o));f.appendChild(l);});}
+    else if(q.type==='select'){const s=el('select');s.id='s-'+q.k;s.setAttribute('aria-label',q.t);const o0=el('option',null,'Seçiniz');o0.value='';s.appendChild(o0);q.o.forEach(o=>{const x=el('option',null,o);x.value=o;s.appendChild(x);});f.appendChild(s);}
+    else{const t=el('textarea');t.id='s-'+q.k;t.maxLength=300;t.setAttribute('aria-label',q.t);f.appendChild(t);}
+    f.appendChild(el('div','kerr',''));c.appendChild(f);
+  });
+}
+function read(){
+  const v={};
+  Q.forEach(q=>{const f=$('f-'+q.k);
+    if(q.type==='radio'){const r=f.querySelector('input:checked');v[q.k]=r?r.value:null;}
+    else if(q.type==='check'){v[q.k]=Array.from(f.querySelectorAll('input:checked')).map(i=>i.value);}
+    else v[q.k]=$('s-'+q.k).value;});
+  return v;}
+function submit(){
+  const r=validate(read());
+  Q.forEach(q=>{const f=$('f-'+q.k),m=r.errors[q.k];f.classList.toggle('bad',!!m);f.lastChild.textContent=m||'';});
+  $('sres').hidden=true;
+  if(!r.ok){const n=Object.keys(r.errors).length;$('serr').textContent='Formda '+n+' hata var. Kırmızı uyarıları düzelt.';const first=Q.find(q=>r.errors[q.k]);const f=$('f-'+first.k),inp=f.querySelector('input,select,textarea');if(inp&&inp.focus)inp.focus();return r;}
+  $('serr').textContent='';$('sout').value=summary(r.data);$('sres').hidden=false;$('scp').textContent='';return r;}
+function copy(){const t=$('sout');t.select();let ok=false;try{if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t.value).then(()=>{$('scp').textContent='Kopyalandı.';},()=>{$('scp').textContent='Otomatik kopyalama çalışmadı; metni seçip elle kopyala.';});return;}ok=document.execCommand('copy');}catch(e){}$('scp').textContent=ok?'Kopyalandı.':'Otomatik kopyalama çalışmadı; metni seçip elle kopyala.';}
+function clr(){build();$('serr').textContent='';$('sres').hidden=true;$('sout').value='';}
+$('ssend').addEventListener('click',submit);$('sclr').addEventListener('click',clr);$('scopy').addEventListener('click',copy);
+window.__eval={PH:PH,Q:Q,ST:ST,pct:pct,validate:validate,summary:summary,vt:vt,submit:submit};
+drawPanel();build();
+})();
+</script>
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const CO2=0.48,MINK=5,MAXK=20000;
+const FAC=['Mühendislik Fakültesi','Teknoloji Fakültesi','Fen Fakültesi','Eğitim Fakültesi','Tıp Fakültesi','Veteriner Fakültesi','İktisadi ve İdari Bilimler Fakültesi','Diş Hekimliği Fakültesi','Diğer'];
+const DEMO=[['Örnek Fakülte A',42,9870],['Örnek Fakülte B',65,12350],['Örnek Fakülte C',28,5040],['Örnek Fakülte D',90,16200],['Örnek Fakülte E',17,3400]];
+const LK='ge_pano_last';
+const reduce=!!(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+let db=null,me=null,canW=false,docs={},live=false,visible=false,cur={},model=null,busy=false;
+function aggregate(list){const by={};let n=0,k=0;list.forEach(d=>{if(!d||d.v!==1||!FAC.includes(d.f)||typeof d.kwh!=='number'||!isFinite(d.kwh)||d.kwh<=0||d.kwh>MAXK)return;n++;k+=d.kwh;const b=by[d.f]||(by[d.f]={f:d.f,n:0,kwh:0});b.n++;b.kwh+=d.kwh;});return{n:n,kwh:k,co2:k*CO2,fac:Object.keys(by).map(x=>by[x]).sort((a,b)=>b.kwh-a.kwh)};}
+function view(real){
+  if(real&&real.n>=MINK){const fac=real.fac.filter(x=>x.n>=MINK).slice(0,5);return{src:'real',n:real.n,kwh:real.kwh,co2:real.co2,fac:fac};}
+  const kwh=DEMO.reduce((s,x)=>s+x[2],0),n=DEMO.reduce((s,x)=>s+x[1],0);
+  return{src:'demo',n:n,kwh:kwh,co2:kwh*CO2,fac:DEMO.map(x=>({f:x[0],n:x[1],kwh:x[2]})).sort((a,b)=>b.kwh-a.kwh),realN:real?real.n:0};}
+const fmt=(v,d)=>v.toLocaleString('tr-TR',{minimumFractionDigits:d,maximumFractionDigits:d});
+function count(id,to,dec){const e=$(id),from=cur[id]||0;cur[id]=to;
+  if(!visible||reduce||!window.requestAnimationFrame){e.textContent=fmt(to,dec);return;}
+  const t0=performance.now(),D=1200;(function st(now){const p=Math.min(1,((now||performance.now())-t0)/D),q=1-Math.pow(1-p,3);e.textContent=fmt(from+(to-from)*q,dec);if(p<1)window.requestAnimationFrame(st);})(t0);}
+function el(t,c,x){const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e;}
+function paint(){
+  const m=model=view(aggregate(Object.keys(docs).map(k=>docs[k])));
+  const s=$('psrc');s.className='psrc'+(m.src==='real'?' real':'');
+  s.textContent=m.src==='real'?'GERÇEK KATKILAR: '+m.n+' öğrencinin izinli ve anonim beyanından hesaplanmıştır (doğrulanmamış beyanlar).':'DEMO VERİ: Aşağıdaki sayılar örnektir, gerçek öğrenci verisi değildir. '+(db?'Gerçek katkı sayısı: '+m.realN+' (gösterim için en az '+MINK+' gerekir).':'Veri tabanı bağlantısı yok.');
+  [['pn1',m.kwh,0],['pn2',m.co2,0],['pn3',m.n,0]].forEach(x=>count(x[0],x[1],x[2]));
+  const tag=m.src==='demo'?' (demo)':'';
+  $('pg1').setAttribute('aria-label','Toplam enerji tasarrufu: '+fmt(m.kwh,0)+' kWh'+tag);$('pg2').setAttribute('aria-label','Önlenen karbon emisyonu: '+fmt(m.co2,0)+' kg CO2'+tag);$('pg3').setAttribute('aria-label','Katkıda bulunan öğrenci sayısı: '+m.n+tag);
+  const L=$('pfl');L.textContent='';const mx=Math.max.apply(null,m.fac.map(x=>x.kwh).concat([1e-9]));
+  m.fac.forEach(x=>{const r=el('div','pfr');r.appendChild(el('span',null,x.f));const b=el('span');const i=el('i');i.style.width=(x.kwh/mx*100).toFixed(1)+'%';b.appendChild(i);r.appendChild(b);r.appendChild(el('span',null,fmt(x.kwh,0)+' kWh'));L.appendChild(r);});
+  $('pfn').textContent=m.src==='real'?(m.fac.length?'Sıralama fakültelerin toplam beyan edilen tasarrufuna göredir; yalnızca en az '+MINK+' katılımcılı fakülteler gösterilir.':'Fakülte dağılımı için her fakültede en az '+MINK+' katılımcı gerekir.'):'Örnek fakülteler ve uydurma sayılardır (DEMO).';
+  if(!m.fac.length&&m.src==='real')$('pfl').appendChild(el('p','note','Yeterli fakülte katılımı yok.'));
+  const mine=me&&docs[me];$('pwd').hidden=!(canW&&mine);
+  const a=annual();$('pcalc').textContent=a===null?'Hesaplayıcıda hatalı giriş var; önce düzelt.':(a>0?'Hesaplayıcıdaki sonucun: yılda yaklaşık '+fmt(a,2)+' kWh önlenebilir kayıp (potansiyel tasarruf).':'Hesaplayıcı sonucu 0 kWh. Değerleri girip tekrar dene.');
+  $('pcon').textContent=db?('Veri tabanı bağlantısı: var'+(canW?' (okuma ve yazma)':' (yalnızca okuma; katkı göndermek için oturum açıp yazma izni gerekir)')+'.'):'Veri tabanı bağlantısı: yok. Bu durumda katkılar gönderilemez; panodaki sayılar demodur.';
+}
+function annual(){const d=window.__hc;if(!d||d.invalid||!d.daily)return null;return Math.round(d.daily.reduce((a,b)=>a+b,0)*d.dy*100)/100;}
+function validateC(x){const er=[];
+  if(x.kwh===null)er.push('Hesaplayıcıda hatalı giriş var; önce düzelt.');else if(!(x.kwh>0))er.push('Hesaplayıcı sonucu 0 kWh; paylaşılacak bir tasarruf yok.');else if(x.kwh>MAXK)er.push('Değer olağan dışı yüksek (en fazla '+MAXK+' kWh/yıl).');
+  if(!FAC.includes(x.f))er.push('Listeden fakültenizi seçin.');if(!x.consent)er.push('Devam etmek için izin kutusunu işaretlemelisin.');return er;}
+async function submit(){
+  if(busy)return;const pe=$('perr'),pm=$('pmsg');pe.textContent='';pm.textContent='';$('pfsel').removeAttribute('aria-invalid');
+  const x={kwh:annual(),f:$('pfsel').value,consent:$('pcons').checked},er=validateC(x);
+  if(er.length){pe.textContent=er.join(' ');if(!FAC.includes(x.f))$('pfsel').setAttribute('aria-invalid','true');return er;}
+  const key=x.f+'|'+x.kwh.toFixed(2);let last=null;try{last=localStorage.getItem(LK);}catch(e){}
+  const mine=me&&docs[me];
+  if(last===key||(mine&&mine.f===x.f&&Math.abs(mine.kwh-x.kwh)<0.005)){pe.textContent='Bu katkıyı zaten gönderdin; tekrar saydırılmaz.';return['dup'];}
+  if(!db||!canW||!me){pe.textContent='Veri tabanı yazım izni yok; katkın gönderilmedi ve hiçbir yere kaydedilmedi. (Değerler geçerli, yalnızca doğrulandı.)';return['nowrite'];}
+  busy=true;
+  try{await db.doc('tasarruf/'+me).set({v:1,f:x.f,kwh:x.kwh,ts:Date.now()});try{localStorage.setItem(LK,key);}catch(e){}pm.textContent=mine?'Katkın güncellendi (kişi başına tek kayıt).':'Katkın kaydedildi. Teşekkürler!';}
+  catch(e){pe.textContent='Katkı kaydedilemedi: yazma reddedildi veya bağlantı sorunu.';}
+  busy=false;return[];}
+async function withdraw(){if(!db||!canW||!me||!docs[me])return;if(!confirm('Katkın silinsin mi?'))return;try{await db.doc('tasarruf/'+me).delete();try{localStorage.removeItem(LK);}catch(e){}$('pmsg').textContent='Katkın silindi.';$('perr').textContent='';}catch(e){$('perr').textContent='Silinemedi.';}}
+const o0=el('option',null,'Seçiniz');o0.value='';$('pfsel').appendChild(o0);FAC.forEach(f=>{const o=el('option',null,f);o.value=f;$('pfsel').appendChild(o);});
+$('psend').addEventListener('click',submit);$('pwd').addEventListener('click',withdraw);
+window.addEventListener('hc:update',paint);
+if('IntersectionObserver' in window){new IntersectionObserver((es,ob)=>{if(es.some(e=>e.isIntersecting)&&!visible){visible=true;cur={};paint();ob.disconnect();}},{threshold:0.2}).observe($('pano'));}else visible=true;
+window.__pano={FAC:FAC,DEMO:DEMO,aggregate:aggregate,view:view,validateC:validateC,annual:annual,submit:submit,withdraw:withdraw,paint:paint,model:()=>model,setVisible:v=>{visible=v;cur={};paint();},docs:()=>docs};
+paint();
+(async()=>{
+  try{
+    const c=window.claude;if(!c||!c.use)return;
+    const d=await c.use('db');if(!d)return;
+    db=d;
+    d.collection('tasarruf').onSnapshot(s=>{const n={};s.docs.forEach(x=>{n[x.id]=x.data();});docs=n;live=true;paint();},()=>{docs={};paint();});
+    try{const u=await c.use('user');me=u?await u.id():null;canW=!!(me&&u&&(await u.can('data.write'))!==false);}catch(e){}
+    paint();
+  }catch(e){}
+})();
+})();
+</script>
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const SITE=(/^https?:$/.test(location.protocol)?location.origin+location.pathname:'https://ORNEK-ALAN-ADI.com/'),CO2=0.48,HS=['700','900','1100'];
+const TIERS=[{min:500,ic:'🏅',n:'Platin'},{min:200,ic:'🥇',n:'Altın'},{min:50,ic:'🥈',n:'Gümüş'},{min:0.005,ic:'🥉',n:'Bronz'}];
+const fmt=(v,d)=>v.toLocaleString('tr-TR',{minimumFractionDigits:d,maximumFractionDigits:d});
+function annual(){const d=window.__hc;if(!d||d.invalid||!d.daily)return null;const v=d.daily.reduce((a,b)=>a+b,0)*d.dy;return isFinite(v)?Math.round(v*100)/100:null;}
+function tier(k){return TIERS.find(t=>k>=t.min)||null;}
+function profile(){try{const G=window.__game;if(G&&G.stats){const p=G.stats(G.state(),new Date()).prof;return{ic:p.ic,n:p.n};}}catch(e){}return null;}
+function build(k,pr){const t=tier(k);if(!t)return null;
+  const co=k*CO2;
+  const txt='Görünmez Enerji hesaplayıcısına göre bekleme modunda ve açık unutulan cihazları kapatırsam yılda yaklaşık '+fmt(k,1)+' kWh enerji ve '+fmt(co,1)+' kg CO₂ emisyonu önleyebilirim. Profilim: '+(pr?pr.n:'belirlenmedi')+'. Rozetim: '+t.n+'. Sen de hesapla:';
+  return{kwh:k,co2:co,tier:t,prof:pr,text:txt,full:txt+' '+SITE};}
+function embedCode(h){h=HS.includes(String(h))?String(h):'900';
+  return '<iframe src="'+SITE+'#gom" title="Görünmez Enerji: Hayalet Enerji Hesaplayıcısı ve Tasarruf Kartı" width="100%" height="'+h+'" style="border:1px solid #d4e6da;border-radius:12px;max-width:760px" loading="lazy" referrerpolicy="no-referrer"></iframe>';}
+let cur=null;
+function update(){
+  const k=annual(),pr=profile(),card=$('kcard');
+  cur=(k!==null&&k>0)?build(k,pr):null;
+  card.className='kcard'+(cur?'':' empty');
+  if(!cur){['kc1','kc2','kc3','kc4'].forEach(i=>$(i).textContent='–');$('ksh').value='';
+    $('kcn').textContent=k===null?'Hesaplayıcıda hatalı giriş var; kart oluşturulamadı. Önce değerleri düzelt.':'Hesaplayıcı sonucu 0 kWh; kart oluşturmak için cihaz sayılarını ve süreleri gir.';
+    $('kcopy').disabled=true;$('kshare').hidden=true;['kwa','kx'].forEach(i=>{$(i).setAttribute('aria-disabled','true');$(i).setAttribute('href','#kartim');});return null;}
+  $('kc1').textContent=fmt(cur.kwh,1)+' kWh/yıl';$('kc2').textContent=fmt(cur.co2,1)+' kg CO₂';
+  $('kc3').textContent=pr?pr.ic+' '+pr.n:'Belirlenmedi';$('kc4').textContent=cur.tier.ic+' '+cur.tier.n;
+  $('kcn').textContent=pr?'':'Ekolojik profil, Tasarruf Oyunu’ndan okunamadı.';
+  $('ksh').value=cur.full;$('kcopy').disabled=false;
+  $('kshare').hidden=!(navigator&&navigator.share);
+  $('kwa').removeAttribute('aria-disabled');$('kx').removeAttribute('aria-disabled');
+  $('kwa').setAttribute('href','https://wa.me/?text='+encodeURIComponent(cur.full));
+  $('kx').setAttribute('href','https://twitter.com/intent/tweet?text='+encodeURIComponent(cur.text)+'&url='+encodeURIComponent(SITE));
+  return cur;}
+function copyText(text,msgId){const m=$(msgId);
+  const fb=()=>{let ok=false;try{const t=$(msgId==='kshm'?'ksh':'kcode');t.select();ok=document.execCommand('copy');}catch(e){}m.textContent=ok?'Kopyalandı.':'Otomatik kopyalama çalışmadı; metni seçip elle kopyala.';};
+  try{if(navigator.clipboard&&navigator.clipboard.writeText){return navigator.clipboard.writeText(text).then(()=>{m.textContent='Kopyalandı.';},fb);}}catch(e){}
+  fb();return Promise.resolve();}
+function route(){const emb=location.hash==='#gom';document.documentElement.classList.toggle('embed',emb);}
+const dlg=$('kdlg');
+function setCode(){$('kcode').value=embedCode($('kh').value);$('kcm').textContent='';}
+$('kcopy').addEventListener('click',()=>{if(cur)copyText(cur.full,'kshm');});
+$('kshare').addEventListener('click',()=>{if(cur&&navigator.share)navigator.share({title:'Görünmez Enerji',text:cur.text,url:SITE}).catch(()=>{});});
+$('kemb').addEventListener('click',()=>{setCode();if(dlg.showModal)dlg.showModal();else dlg.setAttribute('open','');});
+$('kdx').addEventListener('click',()=>{if(dlg.close)dlg.close();else dlg.removeAttribute('open');});
+dlg.addEventListener('click',e=>{if(e.target===dlg&&dlg.close)dlg.close();});
+$('kh').addEventListener('change',setCode);$('kcc').addEventListener('click',()=>copyText($('kcode').value,'kcm'));
+window.addEventListener('hc:update',update);window.addEventListener('hashchange',route);
+if('IntersectionObserver' in window)new IntersectionObserver(es=>{if(es.some(e=>e.isIntersecting))update();},{threshold:0.15}).observe($('kartim'));
+window.__share={SITE:SITE,TIERS:TIERS,annual:annual,tier:tier,build:build,embedCode:embedCode,update:update,copyText:copyText,route:route,state:()=>cur};
+route();update();
+})();
+</script>
+</body>
+</html>
